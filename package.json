@@ -1,4 +1,17 @@
 {
+  "name": "inspector-goadget",
+  "version": "1.0.0",
+  "description": "A Cypress library for automating UI tests on Alberta Design System components.",
+  "main": "src/components/goa-input.js",
+  "scripts": {
+    "test": "cypress run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yaroslav-rybiak/inspector-goadget.git"
+  },
+  "author": "Yaroslav Rybiak",
+  "license": "Apache License Version 2.0",
   "devDependencies": {
     "cypress": "^13.16.1"
   }
