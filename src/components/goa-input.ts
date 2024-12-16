@@ -16,5 +16,6 @@ export function typeInGoaInput(label: string, text: string): void {
     .shadow()
     .find("input")
     .click() // Does not work without click
+    .clear()
     .type(text);
 }
