@@ -6,4 +6,5 @@ declare module "inspector-goadget" {
     optionText: string
   ): void;
   export function uploadFileToGoaInput(label: string, fileName: string): void;
+  export function uploadFileToGoaInput(fileName: string): void;
 }
