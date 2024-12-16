@@ -11,7 +11,6 @@
  * uploadFileToGoaInput('Upload a file', 'ExampleFile.pdf');
  */
 export function uploadFileToGoaInput(label: string, fileName: string): void {
-  // Determine the file type based on the file extension
   const fileExtension = fileName.split(".").pop()?.toLowerCase();
   let fileType: string;
 
