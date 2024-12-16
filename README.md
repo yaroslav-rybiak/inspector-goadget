@@ -21,7 +21,7 @@ Find a goa-input by label and type text
 `typeInGoaInput(label, text);`
 
 Find a goa-dropdown by label and select an option by text
-`selectGoaDropdownOption(dropdownLabel, optionText);`
+`selectGoaDropdownOption(label, optionText);`
 
 Find a goa-input by label and upload a file
 `uploadFileToGoaInput(label, fileName);`
