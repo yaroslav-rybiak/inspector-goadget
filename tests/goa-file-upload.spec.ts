@@ -9,7 +9,7 @@ describe("Upload a file to goa-file-upload-input", () => {
   ];
 
   testCases.forEach(({ label, fileName }) => {
-    it(`Uploads a ${fileName} file using the "${label}" label`, () => {
+    it(`Uploads an ${fileName} file using the "${label}" label`, () => {
       cy.visit("https://design.alberta.ca/components/file-uploader#tab-0");
       uploadFileToGoaInput(label, fileName);
       cy.get(`goa-form-item[label="${label}"]`)
