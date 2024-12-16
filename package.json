@@ -1,6 +1,6 @@
 {
   "name": "inspector-goadget",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "A Cypress library for automating UI tests on Alberta Design System components.",
   "main": "dist/index.js",
   "types": "index.d.ts",
