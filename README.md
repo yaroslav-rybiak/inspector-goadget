@@ -1,24 +1,30 @@
 # inspector-goadget
 
+## Description
+
 Inspector-Goadget is a Cypress-based library designed to simplify UI automation testing for Alberta Design System components. It provides efficient, reusable helper functions to interact with complex shadow DOM elements, ensuring seamless and reliable test creation.
+
+## Installation
+
+To add Inspector-Goadget to your Cypress project, run:
+`npm install inspector-goadget --save-dev`
+
+Import method you need:
+`import { clickGoaButton } from 'inspector-goadget';`
 
 ## Supported methods:
 
-### Find a goa-button by text and click
+Find a goa-button by text and click
+`clickGoaButton(buttonText);`
 
-clickGoaButton(buttonText);
+Find a goa-input by label and type text
+`typeInGoaInput(label, text);`
 
-### Find a goa-input by label and type text
+Find a goa-dropdown by label and select an option by text
+`selectGoaDropdownOption(dropdownLabel, optionText);`
 
-typeInGoaInput(label, text);
-
-### Find a goa-dropdown by label and select an option by text
-
-selectGoaDropdownOption(dropdownLabel, optionText);
-
-### Find a goa-input by label and upload a file
-
-uploadFileToGoaInput(label, fileName);
+Find a goa-input by label and upload a file
+`uploadFileToGoaInput(label, fileName);`
 
 ## Contributing
 
