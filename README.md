@@ -29,3 +29,27 @@ Find a goa-input by label and upload a file
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request if you'd like to improve Inspector-Goadget.
+
+## Examples
+
+```
+import { typeInGoaInput, uploadFileToGoaInput, clickGoaButton, selectGoaDropdownOption } from 'inspector-goadget';
+describe('Check flags for bank statements and direct deposit', () => {
+  it('Type', () => {
+    cy.visit('https://design.alberta.ca/components/input#tab-0');
+    typeInGoaInput('Basic', 'lol');
+  });
+  it('Upload', () => {
+    cy.visit('https://design.alberta.ca/components/file-uploader#tab-0');
+    uploadFileToGoaInput('Upload a file', 'SIN1.jpg');
+  });
+  it('Click', () => {
+    cy.visit('https://design.alberta.ca/components/button#tab-0');
+    clickGoaButton('Primary Button');
+  });
+  it('Select', () => {
+    cy.visit('https://design.alberta.ca/components/dropdown#tab-0');
+    selectGoaDropdownOption('Basic dropdown', 'Red');
+  });
+});
+```
