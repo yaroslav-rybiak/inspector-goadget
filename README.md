@@ -26,9 +26,6 @@ Find a goa-dropdown by label and select an option by text
 Find a goa-input by label and upload a file
 `uploadFileToGoaInput(label, fileName);`
 
-Upload a file to first available file input
-`uploadFileToGoaInput(fileName);`
-
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request if you'd like to improve Inspector-Goadget.

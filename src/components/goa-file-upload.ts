@@ -1,20 +1,16 @@
 /**
  * Uploads a file to a goa-file-upload-input element within a goa-form-item.
  *
- * If a label is provided, the function will locate the associated goa-form-item
- * with the specified label. If no label is provided, it will attempt to find
- * the first available goa-form-item and perform the file upload there.
+ * This function finds the goa-form-item with the specified label,
+ * locates the associated goa-file-upload-input element, and performs
+ * a drag-and-drop upload of the provided file.
  *
- * @param {string} [label] - The optional label of the goa-form-item to locate.
+ * @param {string} label - The label of the goa-form-item to locate.
  * @param {string} fileName - The name of the file to upload (must exist in the Cypress fixtures folder).
  * @example
- * // Specify the label and file name
  * uploadFileToGoaInput('Upload a file', 'ExampleFile.pdf');
- *
- * // Only specify the file name (uses the first available goa-form-item)
- * uploadFileToGoaInput(undefined, 'ExampleFile.pdf');
  */
-export function uploadFileToGoaInput(fileName: string, label?: string): void {
+export function uploadFileToGoaInput(label: string, fileName: string): void {
   const fileExtension = fileName.split(".").pop()?.toLowerCase();
   let fileType: string;
 
@@ -33,12 +29,7 @@ export function uploadFileToGoaInput(fileName: string, label?: string): void {
       throw new Error(`Unsupported file type: ${fileExtension}`);
   }
 
-  // Determine the selector based on whether the label is provided
-  const goaFormItemSelector = label
-    ? `goa-form-item[label="${label}"]`
-    : "goa-form-item";
-
-  cy.get(goaFormItemSelector)
+  cy.get(`goa-form-item[label="${label}"]`)
     .find("goa-file-upload-input")
     .shadow()
     .find('div[data-testid="dragdrop"]')
@@ -55,13 +46,13 @@ export function uploadFileToGoaInput(fileName: string, label?: string): void {
         });
     });
 
-  cy.get(goaFormItemSelector)
+  cy.get(`goa-form-item[label="${label}"]`)
     .find("goa-file-upload-card")
     .shadow()
     .find('div[data-testid="progress"]')
     .should("exist") // Wait for the progress bar to appear
     .then(() => {
-      cy.get(goaFormItemSelector)
+      cy.get(`goa-form-item[label="${label}"]`)
         .find("goa-file-upload-card")
         .shadow()
         .find('div[data-testid="progress"]')
