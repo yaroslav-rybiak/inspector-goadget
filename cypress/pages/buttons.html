@@ -5,13 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>inspector-goadget fixture: buttons</title>
     <!--
-      Local test target for the Cypress specs in tests/.
-      Served by Cypress's file server from the project root, so the paths
-      below resolve into node_modules (see cypress.config.ts).
+      The web-components bundle is chosen at load time: ?wc=2 loads the pinned 2.x
+      package (installed under the alias abgov-web-components-2), anything else the
+      pinned 3.x package. CI runs the suite against both.
     -->
-    <link rel="stylesheet" href="/node_modules/@abgov/web-components/index.css" />
+    <script>
+      (function () {
+        var major = new URLSearchParams(location.search).get("wc") === "2" ? "2" : "3";
+        var base = major === "2" ? "/node_modules/abgov-web-components-2" : "/node_modules/@abgov/web-components";
+        document.documentElement.dataset.webComponents = major;
+        var css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = base + "/index.css";
+        document.head.appendChild(css);
+        var js = document.createElement("script");
+        js.type = "module";
+        js.src = base + "/index.js";
+        document.head.appendChild(js);
+      })();
+    </script>
     <script type="module" src="/node_modules/ionicons/dist/ionicons/ionicons.esm.js"></script>
-    <script type="module" src="/node_modules/@abgov/web-components/index.js"></script>
     <style>
       main {
         max-width: 40rem;

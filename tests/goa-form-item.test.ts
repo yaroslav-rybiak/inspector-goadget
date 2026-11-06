@@ -1,6 +1,6 @@
 import { getGoaFormItem } from "../src/components/goa-form-item";
 import { fillGoaInput, getGoaInput } from "../src/components/goa-input";
-import { visitFixturePage } from "./fixture-page";
+import { itOn3, visitFixturePage } from "./fixture-page";
 
 describe("getGoaFormItem", () => {
   beforeEach(() => {
@@ -11,7 +11,7 @@ describe("getGoaFormItem", () => {
     getGoaFormItem("Basic").should("have.length", 1).and("have.attr", "label", "Basic");
   });
 
-  it("matches a form item labelled through the label slot", () => {
+  itOn3("matches a form item labelled through the label slot", () => {
     getGoaFormItem("Slotted input label")
       .should("have.length", 1)
       .find('[slot="label"]')
@@ -23,7 +23,7 @@ describe("getGoaFormItem", () => {
     getGoaFormItem("Slotted").should("not.exist");
   });
 
-  it("lets label-based helpers work with slotted labels", () => {
+  itOn3("lets label-based helpers work with slotted labels", () => {
     fillGoaInput("Slotted input label", "via slot");
     getGoaInput("Slotted input label").should("have.value", "via slot");
     cy.get('[data-testid="slotted-input-value"]').should("have.text", "via slot");

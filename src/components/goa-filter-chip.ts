@@ -22,5 +22,15 @@ export function getGoaFilterChip(locator: Locator): Cypress.Chainable<JQuery<HTM
  * removeGoaFilterChip("Status: Open");
  */
 export function removeGoaFilterChip(locator: Locator): void {
-  clickShadowControl(getGoaFilterChip(locator).shadow().find("goa-icon-button").shadow().find("button"));
+  getGoaFilterChip(locator)
+    .shadow()
+    .then(($root) => {
+      if ($root.find("goa-icon-button").length) {
+        // web-components 3.x: a goa-icon-button
+        clickShadowControl(getGoaFilterChip(locator).shadow().find("goa-icon-button").shadow().find("button"));
+      } else {
+        // web-components 2.x: a goa-icon inside the chip
+        clickShadowControl(getGoaFilterChip(locator).shadow().find(".delete-icon"));
+      }
+    });
 }

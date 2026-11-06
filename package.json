@@ -43,6 +43,8 @@
   },
   "devDependencies": {
     "@abgov/web-components": "3.2.0",
+    "@types/node": "^22.20.5",
+    "abgov-web-components-2": "npm:@abgov/web-components@2.5.0",
     "cypress": "^16.2.1",
     "ionicons": "8.1.0",
     "typescript": "^7.0.2"

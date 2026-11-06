@@ -5,7 +5,15 @@
     "rootDir": ".",
     "declaration": false,
     "declarationMap": false,
-    "sourceMap": false
+    "sourceMap": false,
+    "types": [
+      "cypress",
+      "node"
+    ]
   },
-  "include": ["src", "tests", "cypress.config.ts"]
+  "include": [
+    "src",
+    "tests",
+    "cypress.config.ts"
+  ]
 }

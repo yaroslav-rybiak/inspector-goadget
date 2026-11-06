@@ -22,5 +22,5 @@ export function getGoaNotification(locator?: Locator): Cypress.Chainable<JQuery<
  * dismissGoaNotification({ text: /saved/i });
  */
 export function dismissGoaNotification(locator?: Locator): void {
-  clickShadowControl(getGoaNotification(locator).shadow().find('button[aria-label="Close the notification"]'));
+  clickShadowControl(getGoaNotification(locator).shadow().find(".close button"));
 }
