@@ -20,7 +20,7 @@ describe("getGoaFormItem", () => {
 
   it("ignores whitespace differences and does not match partial labels", () => {
     getGoaFormItem("  Slotted   input label ").should("have.length", 1);
-    getGoaFormItem("Slotted").should("have.length", 0);
+    getGoaFormItem("Slotted").should("not.exist");
   });
 
   it("lets label-based helpers work with slotted labels", () => {

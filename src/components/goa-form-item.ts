@@ -1,29 +1,22 @@
-import { normalizeText } from "../internal/text";
+import { findGoaHosts, Scope, TextMatch } from "../internal/locate";
 
-/**
- * Returns the label text of a goa-form-item, whether it was given through the
- * `label` attribute or a child with `slot="label"`.
- */
-export function goaFormItemLabel(formItem: Element): string {
-  const attribute = formItem.getAttribute("label");
-  if (attribute && attribute.trim()) return normalizeText(attribute);
-  const slotted = formItem.querySelector(':scope > [slot="label"]');
-  return normalizeText(slotted?.textContent);
-}
+export { goaFormItemLabel } from "../internal/form-item-label";
 
 /**
  * Finds goa-form-item elements by their label.
  *
- * Matches the `label` attribute or the content of a `slot="label"` child. The
- * comparison is exact after collapsing whitespace.
+ * Matches the `label` attribute or the content of a `slot="label"` child. A string
+ * matches exactly after collapsing whitespace; a RegExp is tested against the label.
  *
- * @param {string} label - The visible label of the form item.
+ * @param {string | RegExp} label - The visible label of the form item.
+ * @param {object} [options] - `within`: only search inside this container.
  * @example
  * getGoaFormItem("First name").should("have.attr", "error", "");
+ * getGoaFormItem(/^City/, { within: '[data-cy="address"]' });
  */
-export function getGoaFormItem(label: string): Cypress.Chainable<JQuery<HTMLElement>> {
-  const wanted = normalizeText(label);
-  return cy
-    .get("goa-form-item")
-    .filter((_, el) => goaFormItemLabel(el) === wanted);
+export function getGoaFormItem(
+  label: TextMatch,
+  options: { within?: Scope } = {}
+): Cypress.Chainable<JQuery<HTMLElement>> {
+  return findGoaHosts("goa-form-item", { label, within: options.within }, "label");
 }

@@ -1,3 +1,4 @@
+export type { GoaLocator, Locator, Scope, TextMatch } from "./internal/locate";
 export * from "./components/goa-form-item";
 export * from "./components/goa-button";
 export * from "./components/goa-input";

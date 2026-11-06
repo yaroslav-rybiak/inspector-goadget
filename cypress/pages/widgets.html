@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>inspector-goadget fixture: widgets</title>
+    <link rel="stylesheet" href="/node_modules/@abgov/web-components/index.css" />
+    <script type="module" src="/node_modules/ionicons/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="/node_modules/@abgov/web-components/index.js"></script>
+    <style>
+      main { max-width: 56rem; padding: var(--goa-space-xl, 2rem); font: var(--goa-typography-body-m, 1rem/1.5 sans-serif); }
+      section { margin-bottom: var(--goa-space-2xl, 3rem); }
+      section > * + * { margin-top: var(--goa-space-m, 1rem); }
+      output { font-family: monospace; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Buttons, overlays, navigation</h1>
+      <p>Events: <output id="events" data-testid="events"></output></p>
+
+      <section id="sec-buttons">
+        <h2>Button-like</h2>
+        <goa-icon-button icon="trash" arialabel="Delete row" data-record="icon"></goa-icon-button>
+        <goa-link-button data-record="link-button">Link button</goa-link-button>
+        <goa-link data-record="link"><a href="#link-target">Plain link</a></goa-link>
+        <goa-chip content="Chip one" data-record="chip"></goa-chip>
+        <goa-chip content="Deletable chip" deletable="true" data-record="deletable-chip"></goa-chip>
+        <goa-filter-chip content="Filter chip" removable="true" data-record="filter-chip"></goa-filter-chip>
+      </section>
+
+      <section id="sec-pagination">
+        <h2>goa-pagination</h2>
+        <goa-pagination id="pager" itemcount="95" perpagecount="10" pagenumber="1" data-record="pager"></goa-pagination>
+      </section>
+
+      <section id="sec-modal">
+        <h2>goa-modal</h2>
+        <goa-button id="open-modal">Open modal</goa-button>
+        <goa-modal id="modal" heading="Confirm submission" closable="true" data-record="modal">
+          <p>Are you sure?</p>
+          <div slot="actions">
+            <goa-button-group alignment="end">
+              <goa-button type="secondary" id="modal-cancel">Cancel</goa-button>
+              <goa-button type="primary" id="modal-confirm">Yes, submit</goa-button>
+            </goa-button-group>
+          </div>
+        </goa-modal>
+      </section>
+
+      <section id="sec-drawer">
+        <h2>goa-drawer</h2>
+        <goa-button id="open-drawer">Open drawer</goa-button>
+        <goa-drawer id="drawer" heading="Filters" position="right" data-record="drawer">
+          <p>Drawer body</p>
+          <div slot="actions"><goa-button id="drawer-apply">Apply</goa-button></div>
+        </goa-drawer>
+      </section>
+
+      <section id="sec-popover">
+        <h2>goa-popover</h2>
+        <goa-popover id="popover" data-record="popover">
+          <div slot="target"><goa-button type="secondary">Open popover</goa-button></div>
+          <p>Popover content</p>
+        </goa-popover>
+      </section>
+
+      <section id="sec-notifications">
+        <h2>Notifications</h2>
+        <goa-notification type="information" data-record="notification">Information banner text</goa-notification>
+        <goa-temp-notification id="temp" message="Saved successfully" type="success" visible="true" data-record="temp"></goa-temp-notification>
+      </section>
+
+      <section id="sec-menu">
+        <h2>goa-menu-button</h2>
+        <goa-menu-button text="Assign next" data-record="menu">
+          <goa-menu-action text="Assign 1 file" action="assign-1"></goa-menu-action>
+          <goa-menu-action text="Assign 5 files" action="assign-5"></goa-menu-action>
+        </goa-menu-button>
+      </section>
+
+      <section id="sec-tabs">
+        <h2>goa-tabs</h2>
+        <goa-tabs data-record="tabs">
+          <goa-tab heading="Profile">Profile panel</goa-tab>
+          <goa-tab heading="Documents">Documents panel</goa-tab>
+          <goa-tab heading="History">History panel</goa-tab>
+        </goa-tabs>
+      </section>
+
+      <section id="sec-disclosure">
+        <h2>goa-accordion and goa-details</h2>
+        <goa-accordion heading="Accordion heading" data-record="accordion">Accordion body</goa-accordion>
+        <goa-details heading="Show more" data-record="details">Details body</goa-details>
+      </section>
+
+      <section id="sec-header">
+        <h2>goa-app-header</h2>
+        <goa-app-header heading="Case Management" url="#home">
+          <goa-app-header-menu heading="Reports">
+            <a href="#monthly">Monthly report</a>
+            <a href="#annual">Annual report</a>
+          </goa-app-header-menu>
+          <a href="#cases">Cases</a>
+          <a href="#search">Search</a>
+          <goa-button type="primary" id="sign-in">Sign in</goa-button>
+        </goa-app-header>
+      </section>
+
+      <section id="sec-side-menu">
+        <h2>goa-side-menu</h2>
+        <goa-side-menu>
+          <goa-side-menu-heading>Navigation</goa-side-menu-heading>
+          <a href="#dashboard">Dashboard</a>
+          <goa-side-menu-group heading="Cases">
+            <a href="#open-cases">Open cases</a>
+            <a href="#closed-cases">Closed cases</a>
+          </goa-side-menu-group>
+        </goa-side-menu>
+      </section>
+
+      <section id="sec-work-side-menu">
+        <h2>goa-work-side-menu</h2>
+        <div style="height: 24rem; position: relative;">
+          <goa-work-side-menu heading="DEED" url="#home" username="Jane Doe" usersecondarytext="CEC">
+            <goa-work-side-menu-item slot="primary" label="Alerts" url="#alerts" icon="notifications" data-record="wsm-alerts"></goa-work-side-menu-item>
+            <goa-work-side-menu-group slot="primary" heading="Files" icon="folder">
+              <goa-work-side-menu-item label="Assigned" url="#assigned" data-record="wsm-assigned"></goa-work-side-menu-item>
+            </goa-work-side-menu-group>
+            <goa-work-side-menu-item slot="secondary" label="Settings" url="#settings" icon="settings"></goa-work-side-menu-item>
+          </goa-work-side-menu>
+        </div>
+      </section>
+
+      <section id="sec-stepper">
+        <h2>goa-form-stepper</h2>
+        <goa-form-stepper step="2" data-record="stepper">
+          <goa-form-step text="Personal details" status="complete"></goa-form-step>
+          <goa-form-step text="Employment"></goa-form-step>
+          <goa-form-step text="Review"></goa-form-step>
+        </goa-form-stepper>
+      </section>
+    </main>
+
+    <script type="module">
+      const events = document.getElementById("events");
+      const log = (text) => { events.textContent = text; };
+      const names = ["_click","_change","_open","_close","_action","_dismiss","_toggle","_navigate","_remove","_delete"];
+      for (const el of document.querySelectorAll("[data-record]")) {
+        for (const name of names) {
+          el.addEventListener(name, (e) => {
+            const d = e.detail;
+            const detail = d == null ? "" : typeof d === "object" ? JSON.stringify(d.value ?? d.action ?? d.step ?? d) : String(d);
+            log(`${el.dataset.record}:${name}:${detail}`);
+          });
+        }
+      }
+      document.getElementById("open-modal").addEventListener("_click", () => document.getElementById("modal").setAttribute("open", "true"));
+      document.getElementById("modal").addEventListener("_close", () => document.getElementById("modal").setAttribute("open", "false"));
+      for (const id of ["modal-cancel", "modal-confirm"]) {
+        document.getElementById(id).addEventListener("_click", () => { log(`${id}:_click`); document.getElementById("modal").setAttribute("open", "false"); });
+      }
+      document.getElementById("open-drawer").addEventListener("_click", () => document.getElementById("drawer").setAttribute("open", "true"));
+      document.getElementById("drawer").addEventListener("_close", () => document.getElementById("drawer").setAttribute("open", "false"));
+      document.getElementById("drawer-apply").addEventListener("_click", () => { log("drawer-apply:_click"); document.getElementById("drawer").setAttribute("open", "false"); });
+      document.getElementById("sign-in").addEventListener("_click", () => log("sign-in:_click"));
+    </script>
+  </body>
+</html>

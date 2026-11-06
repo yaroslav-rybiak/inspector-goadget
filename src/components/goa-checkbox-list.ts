@@ -1,29 +1,29 @@
 import { setShadowChecked } from "../internal/actions";
-import { normalizeText } from "../internal/text";
+import { findGoaHosts, Locator, matchesText, TextMatch } from "../internal/locate";
 import { goaCheckboxText } from "./goa-checkbox";
-import { getGoaFormItem } from "./goa-form-item";
 
 /**
- * Finds a goa-checkbox-list by the label of its goa-form-item.
+ * Finds a goa-checkbox-list.
  *
- * Yields the goa-checkbox-list host element. The component reports its selected
- * values through the `_change` event.
+ * A string is the label of the surrounding goa-form-item; see {@link Locator} for
+ * other ways. Yields the goa-checkbox-list host element. The component reports its
+ * selected values through the `_change` event.
  *
- * @param {string} label - The label of the goa-form-item that contains the list.
+ * @param {Locator} locator - Form-item label, or a locator object.
  * @example
  * getGoaCheckboxList("Toppings").find("goa-checkbox").should("have.length", 3);
  */
-export function getGoaCheckboxList(label: string): Cypress.Chainable<JQuery<HTMLElement>> {
-  return getGoaFormItem(label).find("goa-checkbox-list");
+export function getGoaCheckboxList(locator: Locator): Cypress.Chainable<JQuery<HTMLElement>> {
+  return findGoaHosts("goa-checkbox-list", locator, "label");
 }
 
-function setListItems(label: string, texts: string | string[], checked: boolean): void {
-  const wanted = (Array.isArray(texts) ? texts : [texts]).map(normalizeText);
-  getGoaCheckboxList(label).find("goa-checkbox").should("have.length.at.least", 1);
+function setListItems(locator: Locator, texts: TextMatch | TextMatch[], checked: boolean): void {
+  const wanted = Array.isArray(texts) ? texts : [texts];
+  getGoaCheckboxList(locator).find("goa-checkbox").should("have.length.at.least", 1);
   for (const text of wanted) {
-    const input = getGoaCheckboxList(label)
+    const input = getGoaCheckboxList(locator)
       .find("goa-checkbox")
-      .filter((_, el) => goaCheckboxText(el) === text)
+      .filter((_, el) => matchesText(goaCheckboxText(el), text))
       .shadow()
       .find('input[type="checkbox"]');
     setShadowChecked(input, checked);
@@ -33,23 +33,23 @@ function setListItems(label: string, texts: string | string[], checked: boolean)
 /**
  * Checks one or more goa-checkbox items inside a goa-checkbox-list.
  *
- * @param {string} label - The label of the goa-form-item that contains the list.
- * @param {string | string[]} texts - The text of each checkbox to check.
+ * @param {Locator} locator - Form-item label, or a locator object.
+ * @param {string | RegExp | Array} texts - The text of each checkbox to check.
  * @example
  * checkGoaCheckboxList("Toppings", ["Cheese", "Olives"]);
  */
-export function checkGoaCheckboxList(label: string, texts: string | string[]): void {
-  setListItems(label, texts, true);
+export function checkGoaCheckboxList(locator: Locator, texts: TextMatch | TextMatch[]): void {
+  setListItems(locator, texts, true);
 }
 
 /**
  * Unchecks one or more goa-checkbox items inside a goa-checkbox-list.
  *
- * @param {string} label - The label of the goa-form-item that contains the list.
- * @param {string | string[]} texts - The text of each checkbox to uncheck.
+ * @param {Locator} locator - Form-item label, or a locator object.
+ * @param {string | RegExp | Array} texts - The text of each checkbox to uncheck.
  * @example
  * uncheckGoaCheckboxList("Toppings", "Olives");
  */
-export function uncheckGoaCheckboxList(label: string, texts: string | string[]): void {
-  setListItems(label, texts, false);
+export function uncheckGoaCheckboxList(locator: Locator, texts: TextMatch | TextMatch[]): void {
+  setListItems(locator, texts, false);
 }

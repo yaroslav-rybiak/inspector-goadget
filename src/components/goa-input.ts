@@ -1,28 +1,30 @@
-import { getGoaFormItem } from "./goa-form-item";
+import { findGoaHosts, Locator } from "../internal/locate";
 
 /**
- * Finds the native input inside a goa-input by the label of its goa-form-item.
+ * Finds the native input inside a goa-input.
  *
- * Yields the shadow `input`, so `have.value` and similar assertions work directly.
+ * A string is the label of the surrounding goa-form-item. Pass a locator object for
+ * other ways: `{ name: "email" }`, `{ within: '[data-cy="firstName"]' }`. Yields the
+ * shadow `input`, so `have.value` and similar assertions work directly.
  *
- * @param {string} label - The label of the goa-form-item that contains the input.
+ * @param {Locator} locator - Form-item label, or a locator object.
  * @example
  * getGoaInput("First name").should("have.value", "Ada");
  */
-export function getGoaInput(label: string): Cypress.Chainable<JQuery<HTMLInputElement>> {
-  return getGoaFormItem(label).find("goa-input").shadow().find("input");
+export function getGoaInput(locator: Locator): Cypress.Chainable<JQuery<HTMLInputElement>> {
+  return findGoaHosts("goa-input", locator, "label").shadow().find("input");
 }
 
 /**
  * Clears a goa-input and types new text into it.
  *
- * @param {string} label - The label of the goa-form-item that contains the input.
+ * @param {Locator} locator - Form-item label, or a locator object.
  * @param {string} text - The text to type.
  * @example
  * fillGoaInput("Basic", "Hello, World");
  */
-export function fillGoaInput(label: string, text: string): void {
-  getGoaInput(label)
+export function fillGoaInput(locator: Locator, text: string): void {
+  getGoaInput(locator)
     .click() // Does not work without click
     .clear()
     .type(text);

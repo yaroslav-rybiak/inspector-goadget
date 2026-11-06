@@ -1,6 +1,6 @@
 import { setShadowChecked } from "../internal/actions";
-import { normalizeText } from "../internal/text";
-import { getGoaFormItem } from "./goa-form-item";
+import { findGoaHosts, Locator, matchesText, TextMatch } from "../internal/locate";
+import { cssAttrValue, normalizeText } from "../internal/text";
 
 /** The visible label of a goa-radio-item: its `label` attribute or its slotted content. */
 export function goaRadioItemLabel(item: Element): string {
@@ -9,18 +9,22 @@ export function goaRadioItemLabel(item: Element): string {
   return normalizeText(item.textContent);
 }
 
+/** How to pick a goa-radio-item: a string matches its label; an object can use `value`. */
+export type RadioItemLocator = TextMatch | { label?: TextMatch; value?: string };
+
 /**
- * Finds a goa-radio-group by the label of its goa-form-item.
+ * Finds a goa-radio-group.
  *
- * Yields the goa-radio-group host element. The component reports the selected value
- * through the `_change` event.
+ * A string is the label of the surrounding goa-form-item; see {@link Locator} for
+ * other ways such as `{ name: "size" }`. Yields the goa-radio-group host element.
+ * The component reports the selected value through the `_change` event.
  *
- * @param {string} label - The label of the goa-form-item that contains the group.
+ * @param {Locator} locator - Form-item label, or a locator object.
  * @example
  * getGoaRadioGroup("Size").should("have.attr", "name", "size");
  */
-export function getGoaRadioGroup(label: string): Cypress.Chainable<JQuery<HTMLElement>> {
-  return getGoaFormItem(label).find("goa-radio-group");
+export function getGoaRadioGroup(locator: Locator): Cypress.Chainable<JQuery<HTMLElement>> {
+  return findGoaHosts("goa-radio-group", locator, "label");
 }
 
 /**
@@ -28,28 +32,33 @@ export function getGoaRadioGroup(label: string): Cypress.Chainable<JQuery<HTMLEl
  *
  * Yields the shadow `input[type="radio"]`, so `be.checked` works directly.
  *
- * @param {string} label - The label of the goa-form-item that contains the group.
- * @param {string} itemLabel - The visible label of the radio item.
+ * @param {Locator} group - Form-item label of the group, or a locator object.
+ * @param {RadioItemLocator} item - Item label, or `{ value: "m" }`.
  * @example
  * getGoaRadioItem("Size", "Medium").should("be.checked");
+ * getGoaRadioItem({ within: '[data-cy="onBehalf"]' }, { value: "yes" });
  */
-export function getGoaRadioItem(label: string, itemLabel: string): Cypress.Chainable<JQuery<HTMLElement>> {
-  const wanted = normalizeText(itemLabel);
-  return getGoaRadioGroup(label)
-    .find("goa-radio-item")
-    .filter((_, el) => goaRadioItemLabel(el) === wanted)
-    .shadow()
-    .find('input[type="radio"]');
+export function getGoaRadioItem(group: Locator, item: RadioItemLocator): Cypress.Chainable<JQuery<HTMLElement>> {
+  const wanted = typeof item === "string" || item instanceof RegExp ? { label: item } : item;
+  let selector = "goa-radio-item";
+  if (wanted.value !== undefined) selector += `[value="${cssAttrValue(wanted.value)}"]`;
+  let items = getGoaRadioGroup(group).find(selector);
+  if (wanted.label !== undefined) {
+    const label = wanted.label;
+    items = items.filter((_, el) => matchesText(goaRadioItemLabel(el), label));
+  }
+  return items.shadow().find('input[type="radio"]');
 }
 
 /**
- * Selects one item in a goa-radio-group by the item's visible label.
+ * Selects one item in a goa-radio-group.
  *
- * @param {string} label - The label of the goa-form-item that contains the group.
- * @param {string} itemLabel - The visible label of the radio item to select.
+ * @param {Locator} group - Form-item label of the group, or a locator object.
+ * @param {RadioItemLocator} item - Item label, or `{ value: "m" }`.
  * @example
  * selectGoaRadioGroup("Size", "Medium");
+ * selectGoaRadioGroup({ within: '[data-cy="onBehalf"]' }, { value: "yes" });
  */
-export function selectGoaRadioGroup(label: string, itemLabel: string): void {
-  setShadowChecked(getGoaRadioItem(label, itemLabel), true);
+export function selectGoaRadioGroup(group: Locator, item: RadioItemLocator): void {
+  setShadowChecked(getGoaRadioItem(group, item), true);
 }

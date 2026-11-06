@@ -29,9 +29,11 @@
 
       <section id="input">
         <h2>goa-input</h2>
-        <goa-form-item label="Basic">
-          <goa-input name="basic" id="basic-input" data-record="basic-input"></goa-input>
-        </goa-form-item>
+        <div data-cy="basic-wrapper">
+          <goa-form-item label="Basic">
+            <goa-input name="basic" id="basic-input" data-record="basic-input"></goa-input>
+          </goa-form-item>
+        </div>
         <output id="basic-input-value" data-testid="basic-input-value"></output>
         <goa-form-item>
           <span slot="label">Slotted input label</span>
@@ -75,7 +77,7 @@
       <section id="radio-group">
         <h2>goa-radio-group</h2>
         <goa-form-item label="Size">
-          <goa-radio-group name="size" data-record="size">
+          <goa-radio-group name="size" data-cy="size-group" data-record="size">
             <goa-radio-item value="s" label="Small"></goa-radio-item>
             <goa-radio-item value="m" label="Medium"></goa-radio-item>
             <goa-radio-item value="l" label="Large"></goa-radio-item>
@@ -86,8 +88,16 @@
 
       <section id="dropdown">
         <h2>goa-dropdown</h2>
+        <goa-form-item label="Filterable dropdown">
+          <goa-dropdown name="worker" filterable="true" data-record="worker">
+            <goa-dropdown-item value="1" label="Jane Doe, CEC"></goa-dropdown-item>
+            <goa-dropdown-item value="2" label="John Doe, SFSC"></goa-dropdown-item>
+            <goa-dropdown-item value="3" label="Ann Smith, CEC"></goa-dropdown-item>
+          </goa-dropdown>
+        </goa-form-item>
+        <output id="worker-value" data-testid="worker-value"></output>
         <goa-form-item label="Basic dropdown">
-          <goa-dropdown name="colour" id="basic-dropdown" data-record="colour">
+          <goa-dropdown name="colour" id="basic-dropdown" testid="colour-dd" data-record="colour">
             <goa-dropdown-item value="red" label="Red"></goa-dropdown-item>
             <goa-dropdown-item value="green" label="Green"></goa-dropdown-item>
             <goa-dropdown-item value="blue" label="Blue"></goa-dropdown-item>
@@ -124,6 +134,9 @@
 
       <section id="file-upload">
         <h2>goa-file-upload-input</h2>
+        <div data-cy="bare-uploader">
+          <goa-file-upload-input id="bare-uploader" accept="image/*,.pdf" maxfilesize="5MB"></goa-file-upload-input>
+        </div>
         <goa-form-item label="Upload a file">
           <goa-file-upload-input id="uploader" accept="image/*,.pdf" maxfilesize="5MB"></goa-file-upload-input>
           <div id="upload-cards"></div>
@@ -151,10 +164,13 @@
 
       // goa-file-upload-input: mimic an app that uploads the selected file and
       // renders a goa-file-upload-card whose progress goes 0 -> 100.
-      const uploader = document.getElementById("uploader");
       const cards = document.getElementById("upload-cards");
       const uploadEvents = document.getElementById("upload-events");
-      uploader.addEventListener("_selectFile", (event) => {
+      // The bare uploader renders no card, like applications that upload elsewhere.
+      document.getElementById("bare-uploader").addEventListener("_selectFile", (event) => {
+        uploadEvents.textContent = `bare ${event.detail.file.name}`;
+      });
+      document.getElementById("uploader").addEventListener("_selectFile", (event) => {
         const file = event.detail.file;
         const card = document.createElement("goa-file-upload-card");
         card.setAttribute("filename", file.name);

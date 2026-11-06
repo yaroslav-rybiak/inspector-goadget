@@ -1,30 +1,35 @@
 import { clickShadowControl } from "../internal/actions";
+import { findGoaHosts, Locator } from "../internal/locate";
 
 /**
- * Finds the native button inside a goa-button by the button's visible text.
+ * Finds the native button inside a goa-button.
  *
- * Yields the shadow `button`, so assertions such as `be.disabled` work directly.
+ * A string matches the button's visible text exactly (whitespace collapsed). Pass a
+ * locator object for other ways: `{ text: /^Submit/ }`, `{ within: '[data-cy="next"]' }`,
+ * `{ testid: "save" }`. Yields the shadow `button`, so `be.disabled` works directly.
  *
- * @param {string} buttonText - The visible text of the goa-button.
+ * @param {Locator} locator - Button text, or a locator object.
  * @example
  * getGoaButton("Submit").should("be.disabled");
+ * getGoaButton({ within: '[data-cy="next"]' }).click();
  */
-export function getGoaButton(buttonText: string): Cypress.Chainable<JQuery<HTMLButtonElement>> {
-  return cy.get("goa-button").contains(buttonText).shadow().find("button");
+export function getGoaButton(locator: Locator): Cypress.Chainable<JQuery<HTMLButtonElement>> {
+  return findGoaHosts("goa-button", locator, "text").shadow().find("button");
 }
 
 /**
- * Clicks a goa-button by its visible text.
+ * Clicks a goa-button.
  *
  * Checks that the inner button is visible and enabled, then clicks with
  * `force: true`. The slotted text covers the shadow button, so the browser's hit
  * test resolves to the goa-button host and a normal Cypress click never reaches
  * the inner button.
  *
- * @param {string} buttonText - The visible text of the goa-button.
+ * @param {Locator} locator - Button text, or a locator object.
  * @example
  * clickGoaButton("Primary Button");
+ * clickGoaButton({ within: '[data-cy="next"]' });
  */
-export function clickGoaButton(buttonText: string): void {
-  clickShadowControl(getGoaButton(buttonText));
+export function clickGoaButton(locator: Locator): void {
+  clickShadowControl(getGoaButton(locator));
 }

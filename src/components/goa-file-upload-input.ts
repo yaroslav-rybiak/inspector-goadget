@@ -1,75 +1,75 @@
-import { getGoaFormItem } from "./goa-form-item";
+import { findGoaHosts, Locator } from "../internal/locate";
+import { getGoaFileUploadCard } from "./goa-file-upload-card";
 
 /**
- * Finds a goa-file-upload-input by the label of its goa-form-item.
+ * Finds a goa-file-upload-input.
  *
+ * A string is the label of the surrounding goa-form-item. Pass `{}` when the page has
+ * a single uploader outside a form item, or `{ within: '[data-cy="documents"]' }`.
  * Yields the goa-file-upload-input host element.
  *
- * @param {string} label - The label of the goa-form-item that contains the uploader.
+ * @param {Locator} locator - Form-item label, or a locator object.
  * @example
  * getGoaFileUploadInput("Proof of address").should("have.attr", "accept", ".pdf");
  */
-export function getGoaFileUploadInput(label: string): Cypress.Chainable<JQuery<HTMLElement>> {
-  return getGoaFormItem(label).find("goa-file-upload-input");
+export function getGoaFileUploadInput(locator: Locator): Cypress.Chainable<JQuery<HTMLElement>> {
+  return findGoaHosts("goa-file-upload-input", locator, "label");
+}
+
+function mimeType(fileName: string): string {
+  const extension = fileName.split(".").pop()?.toLowerCase();
+  switch (extension) {
+    case "jpg":
+    case "jpeg":
+      return "image/jpeg";
+    case "png":
+      return "image/png";
+    case "pdf":
+      return "application/pdf";
+    default:
+      throw new Error(`Unsupported file type: ${extension}`);
+  }
 }
 
 /**
  * Uploads a file to a goa-file-upload-input by dropping it on the drag-and-drop area.
  *
- * Finds the goa-form-item with the given label, locates the goa-file-upload-input
- * inside it, drops the fixture file on it, then waits for the goa-file-upload-card
- * progress bar to appear and disappear.
+ * Drops the fixture file on the uploader, then waits until the application has
+ * rendered a goa-file-upload-card for that file whose progress bar is gone. Pass
+ * `waitForCard: false` for applications that render no card.
  *
- * @param {string} label - The label of the goa-form-item that contains the uploader.
+ * @param {Locator} locator - Form-item label, or a locator object (`{}` for the only uploader).
  * @param {string} fileName - A file in the Cypress fixtures folder (jpg, jpeg, png or pdf).
+ * @param {object} [options] - `waitForCard` (default true).
  * @example
  * uploadGoaFileUploadInput("Upload a file", "ExampleFile.pdf");
+ * uploadGoaFileUploadInput({ within: '[data-cy="documents"]' }, "leto/sin.jpg", { waitForCard: false });
  */
-export function uploadGoaFileUploadInput(label: string, fileName: string): void {
-  const fileExtension = fileName.split(".").pop()?.toLowerCase();
-  let fileType: string;
+export function uploadGoaFileUploadInput(
+  locator: Locator,
+  fileName: string,
+  options: { waitForCard?: boolean } = {}
+): void {
+  const fileType = mimeType(fileName);
+  const baseName = fileName.split("/").pop() ?? fileName;
 
-  switch (fileExtension) {
-    case "jpg":
-    case "jpeg":
-      fileType = "image/jpeg";
-      break;
-    case "png":
-      fileType = "image/png";
-      break;
-    case "pdf":
-      fileType = "application/pdf";
-      break;
-    default:
-      throw new Error(`Unsupported file type: ${fileExtension}`);
-  }
-
-  getGoaFileUploadInput(label)
+  getGoaFileUploadInput(locator)
     .shadow()
     .find('div[data-testid="dragdrop"]')
     .then((dragDropArea) => {
       cy.fixture(fileName, "binary")
         .then(Cypress.Blob.binaryStringToBlob)
         .then((fileContent) => {
-          const file = new File([fileContent], fileName, { type: fileType });
+          const file = new File([fileContent], baseName, { type: fileType });
           const dataTransfer = new DataTransfer();
           dataTransfer.items.add(file);
-          dragDropArea[0].dispatchEvent(
-            new DragEvent("drop", { dataTransfer })
-          );
+          dragDropArea[0].dispatchEvent(new DragEvent("drop", { dataTransfer }));
         });
     });
 
-  getGoaFormItem(label)
-    .find("goa-file-upload-card")
-    .shadow()
-    .find('div[data-testid="progress"]')
-    .should("exist") // Wait for the progress bar to appear
-    .then(() => {
-      getGoaFormItem(label)
-        .find("goa-file-upload-card")
-        .shadow()
-        .find('div[data-testid="progress"]')
-        .should("not.exist"); // Wait for the progress bar to disappear
-    });
+  if (options.waitForCard === false) return;
+  // The file name is always rendered, so its presence proves the card has rendered;
+  // then wait for the progress bar, if any, to go away.
+  getGoaFileUploadCard(locator, baseName).shadow().find('[data-testid="filename"]').should("exist");
+  getGoaFileUploadCard(locator, baseName).shadow().find('[data-testid="progress"]').should("not.exist");
 }
