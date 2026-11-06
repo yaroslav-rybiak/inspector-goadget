@@ -9,7 +9,7 @@ import { getGoaFormItem } from "./goa-form-item";
  * @example
  * getGoaInput("First name").should("have.value", "Ada");
  */
-export function getGoaInput(label: string): Cypress.Chainable<JQuery<HTMLElement>> {
+export function getGoaInput(label: string): Cypress.Chainable<JQuery<HTMLInputElement>> {
   return getGoaFormItem(label).find("goa-input").shadow().find("input");
 }
 

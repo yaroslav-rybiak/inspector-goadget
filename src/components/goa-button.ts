@@ -9,7 +9,7 @@ import { clickShadowControl } from "../internal/actions";
  * @example
  * getGoaButton("Submit").should("be.disabled");
  */
-export function getGoaButton(buttonText: string): Cypress.Chainable<JQuery<HTMLElement>> {
+export function getGoaButton(buttonText: string): Cypress.Chainable<JQuery<HTMLButtonElement>> {
   return cy.get("goa-button").contains(buttonText).shadow().find("button");
 }
 
