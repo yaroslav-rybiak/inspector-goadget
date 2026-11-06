@@ -1,4 +1,5 @@
-import { getGoaDropdown, selectGoaDropdown } from "../src/components/goa-dropdown";
+import { getGoaDropdown, getGoaDropdownOptions, selectGoaDropdown } from "../src/components/goa-dropdown";
+import { goaOpen } from "../src/internal/attributes";
 import { visitFixturePage } from "./fixture-page";
 
 describe("goa-dropdown", () => {
@@ -12,5 +13,36 @@ describe("goa-dropdown", () => {
       getGoaDropdown("Basic dropdown").should("have.value", optionText);
       cy.get('[data-testid="colour-value"]').should("have.text", optionText.toLowerCase());
     });
+  });
+
+  it("getGoaDropdownOptions lists the options in display order and leaves the field closed", () => {
+    getGoaDropdownOptions("Basic dropdown").should("deep.equal", ["Red", "Green", "Blue"]);
+    cy.get("#basic-dropdown").shadow().find("goa-popover").should(goaOpen(false));
+  });
+
+  it("getGoaDropdownOptions does not change the selection", () => {
+    selectGoaDropdown("Basic dropdown", "Green");
+    getGoaDropdownOptions("Basic dropdown").should("have.length", 3);
+    getGoaDropdown("Basic dropdown").should("have.value", "Green");
+    cy.get('[data-testid="colour-value"]').should("have.text", "green");
+  });
+
+  it("getGoaDropdownOptions with values yields value and text", () => {
+    getGoaDropdownOptions("Basic dropdown", { values: true }).should("deep.equal", [
+      { value: "red", text: "Red" },
+      { value: "green", text: "Green" },
+      { value: "blue", text: "Blue" },
+    ]);
+  });
+
+  it("getGoaDropdownOptions with filter lists only matching options, and none when nothing matches", () => {
+    getGoaDropdownOptions({ name: "worker" }, { filter: "Doe" }).should("deep.equal", ["Jane Doe, CEC", "John Doe, SFSC"]);
+    getGoaDropdownOptions({ name: "worker" }, { filter: "Nobody" }).should("be.empty");
+  });
+
+  it("getGoaDropdownOptions with filter keeps a previous selection", () => {
+    selectGoaDropdown({ name: "worker" }, /^Ann Smith/);
+    getGoaDropdownOptions({ name: "worker" }, { filter: "Doe" }).should("have.length", 2);
+    getGoaDropdown({ name: "worker" }).should("have.value", "Ann Smith, CEC");
   });
 });

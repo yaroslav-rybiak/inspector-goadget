@@ -1,6 +1,6 @@
 import { setShadowChecked } from "../internal/actions";
 import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
-import { cssAttrValue } from "../internal/text";
+import { cssAttrValue, normalizeText } from "../internal/text";
 
 function host(locator: Locator): Cypress.Chainable<JQuery<HTMLElement>> {
   return findGoaHosts("goa-dropdown-multiselect", locator, "label");
@@ -71,4 +71,48 @@ export function selectGoaDropdownMultiselect(locator: Locator, optionTexts: stri
 export function deselectGoaDropdownMultiselect(locator: Locator, optionTexts: string | string[]): void {
   requireOneGoaHost("deselectGoaDropdownMultiselect", "goa-dropdown-multiselect", locator, "label");
   setOptions(locator, optionTexts, false);
+}
+
+/**
+ * Reads the options a goa-dropdown-multiselect offers, without changing its selection.
+ *
+ * Opens the list if needed, collects the option texts in display order, and restores
+ * the list to the state it was in. Yields the texts; with `checked: true`, yields
+ * `{ text, checked }` objects.
+ *
+ * @param {Locator} locator - Form-item label, or a locator object.
+ * @param {object} [options] - `checked`: yield objects with the checked state.
+ * @example
+ * getGoaDropdownMultiselectOptions("Languages").should("deep.equal", ["English", "French", "Ukrainian"]);
+ */
+export function getGoaDropdownMultiselectOptions(
+  locator: Locator,
+  options?: { checked?: false }
+): Cypress.Chainable<string[]>;
+export function getGoaDropdownMultiselectOptions(
+  locator: Locator,
+  options: { checked: true }
+): Cypress.Chainable<{ text: string; checked: boolean }[]>;
+export function getGoaDropdownMultiselectOptions(
+  locator: Locator,
+  options: { checked?: boolean } = {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- overloads give callers the precise type
+): Cypress.Chainable<any> {
+  requireOneGoaHost("getGoaDropdownMultiselectOptions", "goa-dropdown-multiselect", locator, "label");
+  let wasOpen = false;
+  getGoaDropdownMultiselect(locator).then(($trigger) => {
+    wasOpen = $trigger.attr("aria-expanded") === "true";
+  });
+  setOpen(locator, true);
+  return host(locator)
+    .shadow()
+    .find("goa-checkbox")
+    .then(($checkboxes) => {
+      const found = $checkboxes.toArray().map((checkbox) => {
+        const input = checkbox.shadowRoot?.querySelector<HTMLInputElement>('input[type="checkbox"]');
+        return { text: normalizeText(input?.getAttribute("aria-label")), checked: !!input?.checked };
+      });
+      if (!wasOpen) setOpen(locator, false);
+      return cy.wrap(options.checked ? found : found.map((option) => option.text), { log: false });
+    });
 }
