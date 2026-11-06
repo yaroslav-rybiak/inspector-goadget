@@ -35,6 +35,12 @@ describe("locators", () => {
       cy.get('[data-testid="last-clicked"]').should("have.text", "Yes, submit application");
     });
 
+    it("within strings accept jQuery selector extensions", () => {
+      clickGoaButton({ within: "span[data-cy]:first" });
+      cy.get('[data-testid="last-clicked"]').should("have.text", "Next");
+      getGoaButton({ within: 'span:contains("application")' }).should("have.length", 1);
+    });
+
     it("testid and selector match host attributes", () => {
       getGoaButton({ testid: "next-btn" }).should("have.length", 1);
       getGoaButton({ selector: '[type="tertiary"]' }).should("have.length", 1);

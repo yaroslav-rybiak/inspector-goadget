@@ -33,8 +33,11 @@ export interface GoaLocator {
   timeout?: number;
   /**
    * Only match components inside this container, or the container itself when it is
-   * the component (so `data-cy` can sit on a wrapper or on the host). A CSS selector,
-   * an element, or a jQuery collection. `cy.within()` also scopes every helper.
+   * the component (so `data-cy` can sit on a wrapper or on the host). A selector
+   * string (CSS plus jQuery extensions such as `:first`), an element, or a jQuery
+   * collection. A string is re-queried on every retry; an element or collection is
+   * not, so it goes stale when the page re-renders. `cy.within()` also scopes every
+   * helper.
    */
   within?: Scope;
 }
@@ -61,7 +64,13 @@ export function toLocator(locator: Locator | undefined, key: NaturalKey): GoaLoc
 }
 
 function isWithin(el: Element, within: Scope): boolean {
-  if (typeof within === "string") return el.closest(within) !== null;
+  if (typeof within === "string") {
+    // Evaluated with jQuery on every retry, so jQuery-only selectors such as ":first"
+    // or ":contains()" work and the container is re-queried after a re-render.
+    return Cypress.$(within, el.ownerDocument)
+      .toArray()
+      .some((scope) => scope === el || scope.contains(el));
+  }
   // Elements come from the application window, so `instanceof Element` cannot be used here.
   if ("nodeType" in within) return within === el || within.contains(el);
   return within.toArray().some((scope) => scope === el || scope.contains(el));
