@@ -7,4 +7,6 @@ export * from "./components/goa-checkbox-list";
 export * from "./components/goa-radio-group";
 export * from "./components/goa-dropdown";
 export * from "./components/goa-dropdown-multiselect";
+export * from "./components/goa-calendar";
+export * from "./components/goa-date-picker";
 export * from "./components/goa-file-upload-input";
