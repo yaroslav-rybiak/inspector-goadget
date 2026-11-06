@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>inspector-goadget fixture: data and display</title>
+    <!--
+      The web-components bundle is chosen at load time: ?wc=2 loads the pinned 2.x
+      package (installed under the alias abgov-web-components-2), anything else the
+      pinned 3.x package. CI runs the suite against both.
+    -->
+    <script>
+      (function () {
+        var major = new URLSearchParams(location.search).get("wc") === "2" ? "2" : "3";
+        var base = major === "2" ? "/node_modules/abgov-web-components-2" : "/node_modules/@abgov/web-components";
+        document.documentElement.dataset.webComponents = major;
+        var css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = base + "/index.css";
+        document.head.appendChild(css);
+        var js = document.createElement("script");
+        js.type = "module";
+        js.src = base + "/index.js";
+        document.head.appendChild(js);
+      })();
+    </script>
+    <script type="module" src="/node_modules/ionicons/dist/ionicons/ionicons.esm.js"></script>
+    <style>
+      main { max-width: 60rem; padding: var(--goa-space-xl, 2rem); font: var(--goa-typography-body-m, 1rem/1.5 sans-serif); }
+      section { margin-bottom: var(--goa-space-2xl, 3rem); }
+      section > * + * { margin-top: var(--goa-space-m, 1rem); }
+      output { font-family: monospace; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Data and display</h1>
+      <p>Events: <output id="events" data-testid="events"></output></p>
+
+      <section id="sec-table">
+        <h2>goa-table</h2>
+        <!--
+          Table rows are kept in <template> elements and cloned in: the HTML parser drops
+          <thead>/<tr>/<td> that are not inside a <table>, but goa-table slots them into
+          the table it renders itself (frameworks build this DOM programmatically).
+        -->
+        <goa-table id="files" width="100%" data-record="table"></goa-table>
+        <template id="files-rows">
+          <thead>
+            <tr>
+              <th><goa-table-sort-header name="fileNumber">File number</goa-table-sort-header></th>
+              <th><goa-table-sort-header name="name">Name</goa-table-sort-header></th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1001</td><td>Ann Smith</td><td>Open</td><td><goa-button type="tertiary" size="compact">View</goa-button></td></tr>
+            <tr><td>1002</td><td>Jane Doe</td><td>Closed</td><td><goa-button type="tertiary" size="compact">View</goa-button></td></tr>
+            <tr><td>1003</td><td>John Doe</td><td>Open</td><td><goa-button type="tertiary" size="compact">View</goa-button></td></tr>
+          </tbody>
+        </template>
+        <goa-data-grid>
+          <goa-table id="grid-table" data-record="grid"></goa-table>
+        </goa-data-grid>
+        <template id="grid-rows">
+          <thead><tr><th><goa-table-sort-header name="city">City</goa-table-sort-header></th><th>Population</th></tr></thead>
+          <tbody><tr><td>Calgary</td><td>1,300,000</td></tr><tr><td>Edmonton</td><td>1,000,000</td></tr></tbody>
+        </template>
+        <script>
+          // Runs during parsing, before the (module) bundle upgrades the elements: with
+          // web-components 2.x a goa-table upgraded while empty renders no slot, so rows
+          // appended later would never show. Frameworks attach children before insertion.
+          for (const [tableId, templateId] of [["files", "files-rows"], ["grid-table", "grid-rows"]]) {
+            document.getElementById(tableId).append(document.getElementById(templateId).content.cloneNode(true));
+          }
+        </script>
+      </section>
+
+      <section id="sec-notification-panel">
+        <h2>goa-work-side-notification-panel</h2>
+        <div style="width: 26rem; height: 30rem; border: 1px solid #ccc;">
+          <goa-work-side-notification-panel heading="Notifications" testid="panel" data-record="panel">
+            <goa-work-side-notification-item title="Case 1001 reassigned" description="Assigned to you by a supervisor" timestamp="2026-11-06T09:00:00Z" readstatus="unread" priority="urgent" data-record="n1"></goa-work-side-notification-item>
+            <goa-work-side-notification-item title="Document received" description="Bank statement uploaded" timestamp="2026-11-05T09:00:00Z" readstatus="unread" data-record="n2"></goa-work-side-notification-item>
+            <goa-work-side-notification-item title="Weekly summary" description="12 files closed" timestamp="2026-11-01T09:00:00Z" readstatus="read" data-record="n3"></goa-work-side-notification-item>
+          </goa-work-side-notification-panel>
+        </div>
+      </section>
+
+      <section id="sec-microsite">
+        <h2>goa-microsite-header</h2>
+        <goa-microsite-header type="alpha" version="1.0.0" feedbackurl="#feedback" data-record="microsite-url"></goa-microsite-header>
+        <goa-microsite-header type="beta" hasfeedbackhandler="true" data-record="microsite-handler"></goa-microsite-header>
+      </section>
+
+      <section id="sec-temp">
+        <h2>goa-temp-notification</h2>
+        <goa-temp-notification-ctrl></goa-temp-notification-ctrl>
+        <goa-button id="show-temp" type="secondary">Show temporary notification</goa-button>
+      </section>
+
+      <section id="sec-display">
+        <h2>Display components</h2>
+        <goa-tooltip content="Helpful tip" data-record="tooltip"><goa-button type="secondary">Hover me</goa-button></goa-tooltip>
+        <goa-callout type="important" heading="Important callout">Callout body text</goa-callout>
+        <goa-badge type="success" content="Approved"></goa-badge>
+        <goa-badge type="information" content="12" arialabel="12 unread"></goa-badge>
+        <goa-linear-progress progress="40" ariaLabel="Upload progress"></goa-linear-progress>
+        <goa-circular-progress variant="inline" size="small" message="Loading files" visible="true" progress="60"></goa-circular-progress>
+      </section>
+    </main>
+
+    <script type="module">
+      const events = document.getElementById("events");
+      const log = (text) => { events.textContent = events.textContent ? `${events.textContent} | ${text}` : text; };
+      // Internal relay events (for example the notification panel's close icon asks its
+      // popover to close this way).
+      document.body.addEventListener("msg", (e) => log(`msg:${e.detail?.action}`));
+      const names = ["_sort", "_multisort", "_click", "_change", "_close", "_notificationItemRead", "_viewAll", "_markAllRead", "_feedbackClick", "goa:work-side-notification-panel:closePopover"];
+      for (const el of document.querySelectorAll("[data-record]")) {
+        for (const name of names) {
+          el.addEventListener(name, (e) => {
+            const d = e.detail;
+            const detail = d == null ? "" : typeof d === "object" ? JSON.stringify(d) : String(d);
+            log(`${el.dataset.record}:${name}:${detail}`);
+          });
+        }
+      }
+      // Sort the first table's rows ourselves, like an application would.
+      document.getElementById("files").addEventListener("_sort", (e) => {
+        const { sortBy, sortDir } = e.detail;
+        const tbody = document.querySelector("#files tbody");
+        const index = ["fileNumber", "name", "status"].indexOf(sortBy);
+        const rows = [...tbody.querySelectorAll("tr")];
+        rows.sort((a, b) => a.children[index].textContent.localeCompare(b.children[index].textContent) * (sortDir < 0 ? -1 : 1));
+        tbody.append(...rows);
+      });
+      // What TemporaryNotification.show() in the wrapper libraries does: the controller
+      // listens on document.body for the internal "msg" relay event.
+      document.getElementById("show-temp").addEventListener("_click", () => {
+        document.body.dispatchEvent(new CustomEvent("msg", {
+          composed: true,
+          detail: {
+            action: "goa:temp-notification",
+            data: { uuid: "t1", message: "Changes saved", type: "success", duration: "long", actionText: "Undo", action: () => log("temp:action") },
+          },
+        }));
+      });
+    </script>
+  </body>
+</html>

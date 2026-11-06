@@ -1,5 +1,5 @@
 /** Local fixture pages under cypress/pages, served by Cypress from the project root. */
-export type FixturePage = "buttons" | "forms" | "widgets";
+export type FixturePage = "buttons" | "forms" | "widgets" | "display";
 
 /**
  * Major version of @abgov/web-components the fixture pages load: "2" when the suite

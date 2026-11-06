@@ -128,7 +128,7 @@ export function findGoaHosts(
   locator: Locator | undefined,
   key: NaturalKey,
   textOf: (el: Element) => string = (el) => normalizeText(el.textContent),
-  options: { log?: boolean } = {}
+  options: { log?: boolean; includeShadowDom?: boolean } = {}
 ): Chainable {
   const loc = toLocator(locator, key);
   const selector = tagSelector(tag, loc);
@@ -138,8 +138,12 @@ export function findGoaHosts(
   }
   // A retried assertion takes its timeout from the last query before it, so every
   // query in the chain gets the requested timeout.
-  const opts: { timeout?: number; log?: boolean } = loc.timeout === undefined ? {} : { timeout: loc.timeout };
+  const opts: { timeout?: number; log?: boolean; includeShadowDom?: boolean } =
+    loc.timeout === undefined ? {} : { timeout: loc.timeout };
   if (options.log === false) opts.log = false;
+  // For components another component renders inside its own shadow root
+  // (goa-temp-notification inside goa-temp-notification-ctrl).
+  if (options.includeShadowDom) opts.includeShadowDom = true;
   const scoped = (chain: Chainable): Chainable =>
     within === undefined ? chain : chain.filter((_, el) => isWithin(el, within), opts);
 
@@ -178,14 +182,25 @@ export function findGoaHosts(
  * under `root`, computed with jQuery. Used where Cypress's query chain cannot carry a
  * custom message (an empty `.filter()` fails before any chained assertion runs).
  */
+function queryDeep(root: Element | Document | ShadowRoot, selector: string): Element[] {
+  const found = Array.from(root.querySelectorAll(selector));
+  for (const el of Array.from(root.querySelectorAll("*"))) {
+    if (el.shadowRoot) found.push(...queryDeep(el.shadowRoot, selector));
+  }
+  return found;
+}
+
 export function matchGoaHosts(
   root: Element | Document,
   tag: string,
   loc: GoaLocator,
-  textOf: (el: Element) => string = (el) => normalizeText(el.textContent)
+  textOf: (el: Element) => string = (el) => normalizeText(el.textContent),
+  options: { includeShadowDom?: boolean } = {}
 ): Element[] {
   const selector = tagSelector(tag, loc);
   const within = loc.within;
+  const query = (sel: string, from: Element | Document) =>
+    options.includeShadowDom ? queryDeep(from, sel) : Cypress.$(sel, from).toArray();
   const scoped = (els: Element[]) => (within === undefined ? els : els.filter((el) => isWithin(el, within)));
   let hosts: Element[];
   if (loc.label !== undefined) {
@@ -196,7 +211,7 @@ export function matchGoaHosts(
     if (tag !== "goa-form-item") hosts = formItems.flatMap((item) => Cypress.$(selector, item).toArray());
     else hosts = selector === tag ? formItems : formItems.filter((el) => el.matches(selector));
   } else {
-    hosts = scoped(Cypress.$(selector, root).toArray());
+    hosts = scoped(query(selector, root));
   }
   if (loc.text !== undefined) {
     const text = loc.text;
@@ -216,14 +231,15 @@ export function requireOneGoaHost(
   tag: string,
   locator: Locator | undefined,
   key: NaturalKey,
-  textOf?: (el: Element) => string
+  textOf?: (el: Element) => string,
+  options: { includeShadowDom?: boolean } = {}
 ): void {
   const loc = toLocator(locator, key);
   const description = describeLocator(loc);
   const opts: { log: false; timeout?: number } = { log: false };
   if (loc.timeout !== undefined) opts.timeout = loc.timeout;
   cy.root(opts).should(($root) => {
-    const found = matchGoaHosts($root[0], tag, loc, textOf).length;
+    const found = matchGoaHosts($root[0], tag, loc, textOf, options).length;
     expect(found, `${helper}: expected exactly one ${tag} matching ${description}, found ${found}`).to.eq(1);
   });
 }
