@@ -10,3 +10,4 @@ export * from "./components/goa-dropdown-multiselect";
 export * from "./components/goa-calendar";
 export * from "./components/goa-date-picker";
 export * from "./components/goa-file-upload-input";
+export * from "./components/goa-file-upload-card";
