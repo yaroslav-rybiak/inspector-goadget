@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /**
@@ -33,6 +33,7 @@ export function getGoaFormStep(locator: Locator): Cypress.Chainable<JQuery<HTMLE
  * selectGoaFormStep("Personal details");
  */
 export function selectGoaFormStep(locator: Locator): void {
+  requireOneGoaHost("selectGoaFormStep", "goa-form-step", locator, "text", (el) => normalizeText(el.getAttribute("text")));
   const button = () => getGoaFormStep(locator).shadow().find('button[data-testid="button"]');
   // The stepper numbers its steps asynchronously after mount; until then a click
   // carries no step number. The button's aria-label gets "Step N of M" at that point.

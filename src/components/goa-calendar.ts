@@ -1,5 +1,5 @@
 import { pickGoaCalendarDate } from "../internal/date";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds goa-calendar elements.
@@ -29,5 +29,6 @@ export function getGoaCalendar(locator?: Locator): Cypress.Chainable<JQuery<HTML
  * selectGoaCalendar("2026-02-10");
  */
 export function selectGoaCalendar(date: Date | string, locator?: Locator): void {
+  requireOneGoaHost("selectGoaCalendar", "goa-calendar", locator, "none");
   pickGoaCalendarDate(() => getGoaCalendar(locator), date);
 }

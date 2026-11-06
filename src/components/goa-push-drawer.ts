@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { attributeOrSlotText, findGoaHosts, Locator } from "../internal/locate";
+import { attributeOrSlotText, findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds a goa-push-drawer by its heading (`heading` attribute or `slot="heading"`).
@@ -22,6 +22,7 @@ export function getGoaPushDrawer(locator: Locator): Cypress.Chainable<JQuery<HTM
  * closeGoaPushDrawer("Details");
  */
 export function closeGoaPushDrawer(locator: Locator): void {
+  requireOneGoaHost("closeGoaPushDrawer", "goa-push-drawer", locator, "text", (el) => attributeOrSlotText(el, "heading", "heading"));
   clickShadowControl(
     getGoaPushDrawer(locator)
       .find('goa-icon-button[data-testid="drawer-close-button"]', { includeShadowDom: true })

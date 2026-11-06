@@ -4,6 +4,7 @@ import { getGoaFormItem } from "../src/components/goa-form-item";
 import { fillGoaInput, getGoaInput } from "../src/components/goa-input";
 import { getGoaRadioItem, selectGoaRadioGroup } from "../src/components/goa-radio-group";
 import { getGoaFileUploadInput, uploadGoaFileUploadInput } from "../src/components/goa-file-upload-input";
+import { configureGoa } from "../src/internal/config";
 import { visitFixturePage } from "./fixture-page";
 
 describe("locators", () => {
@@ -51,6 +52,53 @@ describe("locators", () => {
         getGoaButton({ within: $wrapper }).should("have.length", 1);
         getGoaButton({ within: $wrapper[0] }).should("have.length", 1);
       });
+    });
+  });
+
+  describe("@id shorthand", () => {
+    beforeEach(() => visitFixturePage("buttons"));
+    afterEach(() => configureGoa({ testAttribute: "data-cy" }));
+
+    it("a string starting with @ scopes to the element with that data-cy", () => {
+      clickGoaButton("@next");
+      cy.get('[data-testid="last-clicked"]').should("have.text", "Next");
+      getGoaButton({ within: "@confirm" }).should("have.length", 1);
+    });
+
+    it("configureGoa changes the attribute the shorthand uses", () => {
+      configureGoa({ testAttribute: "data-test" });
+      getGoaButton("@alt-next").should("have.length", 1);
+      clickGoaButton("@alt-next");
+      cy.get('[data-testid="last-clicked"]').should("have.text", "Next");
+    });
+  });
+
+  describe("failure messages", () => {
+    beforeEach(() => visitFixturePage("buttons"));
+
+    it("an action that matches nothing names the helper, tag and locator", (done) => {
+      cy.on("fail", (error) => {
+        expect(error.message).to.include(
+          'clickGoaButton: expected exactly one goa-button matching {within: "[data-cy=\\"nope\\"]", timeout: 500}, found 0'
+        );
+        done();
+        return false;
+      });
+      clickGoaButton({ within: '[data-cy="nope"]', timeout: 500 });
+    });
+
+    it("an action that matches several components says how many", (done) => {
+      cy.on("fail", (error) => {
+        expect(error.message).to.match(/clickGoaButton: expected exactly one goa-button matching \{within: "#button", timeout: 500\}, found [2-9]/);
+        done();
+        return false;
+      });
+      clickGoaButton({ within: "#button", timeout: 500 });
+    });
+
+    it("locators still yield every match and allow absence checks on hosts", () => {
+      getGoaButton({ within: "#button" }).should("have.length.greaterThan", 2);
+      getGoaFormItem("nothing here").should("not.exist");
     });
   });
 

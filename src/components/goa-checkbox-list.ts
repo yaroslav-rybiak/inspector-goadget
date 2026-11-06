@@ -1,5 +1,5 @@
 import { setShadowChecked } from "../internal/actions";
-import { findGoaHosts, Locator, matchesText, TextMatch } from "../internal/locate";
+import { findGoaHosts, Locator, matchesText, requireOneGoaHost, TextMatch } from "../internal/locate";
 import { goaCheckboxText } from "./goa-checkbox";
 
 /**
@@ -39,6 +39,7 @@ function setListItems(locator: Locator, texts: TextMatch | TextMatch[], checked:
  * checkGoaCheckboxList("Toppings", ["Cheese", "Olives"]);
  */
 export function checkGoaCheckboxList(locator: Locator, texts: TextMatch | TextMatch[]): void {
+  requireOneGoaHost("checkGoaCheckboxList", "goa-checkbox-list", locator, "label");
   setListItems(locator, texts, true);
 }
 
@@ -51,5 +52,6 @@ export function checkGoaCheckboxList(locator: Locator, texts: TextMatch | TextMa
  * uncheckGoaCheckboxList("Toppings", "Olives");
  */
 export function uncheckGoaCheckboxList(locator: Locator, texts: TextMatch | TextMatch[]): void {
+  requireOneGoaHost("uncheckGoaCheckboxList", "goa-checkbox-list", locator, "label");
   setListItems(locator, texts, false);
 }

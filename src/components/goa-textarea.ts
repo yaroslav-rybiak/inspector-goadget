@@ -1,4 +1,4 @@
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds the native textarea inside a goa-textarea.
@@ -23,5 +23,6 @@ export function getGoaTextarea(locator: Locator): Cypress.Chainable<JQuery<HTMLT
  * fillGoaTextarea("Comments", "Looks good");
  */
 export function fillGoaTextarea(locator: Locator, text: string): void {
+  requireOneGoaHost("fillGoaTextarea", "goa-textarea", locator, "label");
   getGoaTextarea(locator).click().clear().type(text);
 }

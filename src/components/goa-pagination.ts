@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds a goa-pagination. Yields the host; `pagenumber` is the current page.
@@ -22,6 +22,7 @@ export function getGoaPagination(locator?: Locator): Cypress.Chainable<JQuery<HT
  * selectGoaPagination(3);
  */
 export function selectGoaPagination(page: number | "next" | "previous", locator?: Locator): void {
+  requireOneGoaHost("selectGoaPagination", "goa-pagination", locator, "none");
   if (typeof page === "number") {
     const dropdown = () =>
       getGoaPagination(locator).shadow().find('[data-testid="page-selector"] goa-dropdown').shadow();

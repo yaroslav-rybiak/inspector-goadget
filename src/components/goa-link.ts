@@ -1,4 +1,4 @@
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds a goa-link by its visible text. Yields the goa-link host; the anchor it wraps
@@ -20,5 +20,6 @@ export function getGoaLink(locator: Locator): Cypress.Chainable<JQuery<HTMLEleme
  * clickGoaLink("Terms of use");
  */
 export function clickGoaLink(locator: Locator): void {
+  requireOneGoaHost("clickGoaLink", "goa-link", locator, "text");
   getGoaLink(locator).find("a").click();
 }

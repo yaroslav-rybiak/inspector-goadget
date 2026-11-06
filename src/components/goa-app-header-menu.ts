@@ -1,5 +1,5 @@
 import { goaOpen, isGoaOpen } from "../internal/attributes";
-import { findGoaHosts, Locator, TextMatch } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost, TextMatch } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /**
@@ -18,6 +18,7 @@ export function getGoaAppHeaderMenu(locator: Locator): Cypress.Chainable<JQuery<
  * @param {Locator} locator - Menu heading, or a locator object.
  */
 export function openGoaAppHeaderMenu(locator: Locator): void {
+  requireOneGoaHost("openGoaAppHeaderMenu", "goa-app-header-menu", locator, "text", (el) => normalizeText(el.getAttribute("heading")));
   const popover = () => getGoaAppHeaderMenu(locator).shadow().find("goa-popover");
   popover().then(($popover) => {
     if (!isGoaOpen($popover)) {
@@ -36,6 +37,7 @@ export function openGoaAppHeaderMenu(locator: Locator): void {
  * selectGoaAppHeaderMenu("Reports", "Monthly report");
  */
 export function selectGoaAppHeaderMenu(locator: Locator, linkText: TextMatch): void {
+  requireOneGoaHost("selectGoaAppHeaderMenu", "goa-app-header-menu", locator, "text", (el) => normalizeText(el.getAttribute("heading")));
   openGoaAppHeaderMenu(locator);
   getGoaAppHeaderMenu(locator).contains("a", linkText).click();
 }

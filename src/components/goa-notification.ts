@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds a goa-notification by its text. Yields the host.
@@ -22,5 +22,6 @@ export function getGoaNotification(locator?: Locator): Cypress.Chainable<JQuery<
  * dismissGoaNotification({ text: /saved/i });
  */
 export function dismissGoaNotification(locator?: Locator): void {
+  requireOneGoaHost("dismissGoaNotification", "goa-notification", locator, "text");
   clickShadowControl(getGoaNotification(locator).shadow().find(".close button"));
 }

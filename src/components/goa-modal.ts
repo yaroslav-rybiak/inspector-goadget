@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { attributeOrSlotText, findGoaHosts, Locator } from "../internal/locate";
+import { attributeOrSlotText, findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds a goa-modal by its heading (`heading` attribute or `slot="heading"`).
@@ -24,6 +24,7 @@ export function getGoaModal(locator: Locator): Cypress.Chainable<JQuery<HTMLElem
  * closeGoaModal("Confirm submission");
  */
 export function closeGoaModal(locator: Locator): void {
+  requireOneGoaHost("closeGoaModal", "goa-modal", locator, "text", (el) => attributeOrSlotText(el, "heading", "heading"));
   clickShadowControl(
     getGoaModal(locator).shadow().find('goa-icon-button[data-testid="modal-close-button"]').shadow().find("button")
   );

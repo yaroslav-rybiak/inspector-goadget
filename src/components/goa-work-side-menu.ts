@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /**
@@ -29,6 +29,7 @@ function setMenuOpen(locator: Locator | undefined, open: boolean): void {
  * @param {Locator} [locator] - Which menu, when there are several.
  */
 export function openGoaWorkSideMenu(locator?: Locator): void {
+  requireOneGoaHost("openGoaWorkSideMenu", "goa-work-side-menu", locator, "none");
   setMenuOpen(locator, true);
 }
 
@@ -38,6 +39,7 @@ export function openGoaWorkSideMenu(locator?: Locator): void {
  * @param {Locator} [locator] - Which menu, when there are several.
  */
 export function closeGoaWorkSideMenu(locator?: Locator): void {
+  requireOneGoaHost("closeGoaWorkSideMenu", "goa-work-side-menu", locator, "none");
   setMenuOpen(locator, false);
 }
 
@@ -64,6 +66,7 @@ export function getGoaWorkSideMenuItem(locator: Locator): Cypress.Chainable<JQue
  * clickGoaWorkSideMenuItem("Alerts");
  */
 export function clickGoaWorkSideMenuItem(locator: Locator): void {
+  requireOneGoaHost("clickGoaWorkSideMenuItem", "goa-work-side-menu-item", locator, "text", (el) => normalizeText(el.getAttribute("label")));
   clickShadowControl(getGoaWorkSideMenuItem(locator));
 }
 
@@ -95,6 +98,7 @@ function setGroupOpen(locator: Locator, open: boolean): void {
  * clickGoaWorkSideMenuItem("Assigned");
  */
 export function openGoaWorkSideMenuGroup(locator: Locator): void {
+  requireOneGoaHost("openGoaWorkSideMenuGroup", "goa-work-side-menu-group", locator, "text", (el) => normalizeText(el.getAttribute("heading")));
   setGroupOpen(locator, true);
 }
 
@@ -104,5 +108,6 @@ export function openGoaWorkSideMenuGroup(locator: Locator): void {
  * @param {Locator} locator - Group heading, or a locator object.
  */
 export function closeGoaWorkSideMenuGroup(locator: Locator): void {
+  requireOneGoaHost("closeGoaWorkSideMenuGroup", "goa-work-side-menu-group", locator, "text", (el) => normalizeText(el.getAttribute("heading")));
   setGroupOpen(locator, false);
 }

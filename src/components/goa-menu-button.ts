@@ -1,6 +1,6 @@
 import { clickShadowControl } from "../internal/actions";
 import { goaOpen } from "../internal/attributes";
-import { findGoaHosts, Locator, matchesText, TextMatch } from "../internal/locate";
+import { findGoaHosts, Locator, matchesText, requireOneGoaHost, TextMatch } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /**
@@ -22,6 +22,7 @@ export function getGoaMenuButton(locator: Locator): Cypress.Chainable<JQuery<HTM
  * @param {Locator} locator - Menu button text, or a locator object.
  */
 export function openGoaMenuButton(locator: Locator): void {
+  requireOneGoaHost("openGoaMenuButton", "goa-menu-button", locator, "text", (el) => normalizeText(el.getAttribute("text")));
   clickShadowControl(getGoaMenuButton(locator).shadow().find("goa-button, goa-icon-button").shadow().find("button"));
   getGoaMenuButton(locator).shadow().find("goa-popover").should(goaOpen());
 }
@@ -36,6 +37,7 @@ export function openGoaMenuButton(locator: Locator): void {
  * selectGoaMenuButton("Assign next", "Assign 5 files");
  */
 export function selectGoaMenuButton(locator: Locator, actionText: TextMatch): void {
+  requireOneGoaHost("selectGoaMenuButton", "goa-menu-button", locator, "text", (el) => normalizeText(el.getAttribute("text")));
   openGoaMenuButton(locator);
   clickShadowControl(
     getGoaMenuButton(locator)

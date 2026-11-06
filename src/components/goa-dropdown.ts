@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator, TextMatch } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost, TextMatch } from "../internal/locate";
 
 function host(locator: Locator): Cypress.Chainable<JQuery<HTMLElement>> {
   return findGoaHosts("goa-dropdown", locator, "label");
@@ -37,6 +37,7 @@ export function getGoaDropdown(locator: Locator): Cypress.Chainable<JQuery<HTMLE
  * selectGoaDropdown({ name: "worker" }, /^Jane Doe,/, { filter: "Jane" });
  */
 export function selectGoaDropdown(locator: Locator, optionText: TextMatch, options: { filter?: string } = {}): void {
+  requireOneGoaHost("selectGoaDropdown", "goa-dropdown", locator, "label");
   if (options.filter !== undefined) {
     clearGoaDropdown(locator);
     getGoaDropdown(locator).click().type(options.filter);
@@ -59,6 +60,7 @@ export function selectGoaDropdown(locator: Locator, optionText: TextMatch, optio
  * clearGoaDropdown({ name: "worker" });
  */
 export function clearGoaDropdown(locator: Locator): void {
+  requireOneGoaHost("clearGoaDropdown", "goa-dropdown", locator, "label");
   host(locator)
     .shadow()
     .then(($root) => {

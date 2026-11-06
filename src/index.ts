@@ -1,5 +1,7 @@
 export type { GoaLocator, Locator, Scope, TextMatch } from "./internal/locate";
 export { goaOpen, isGoaOpen, domAttr } from "./internal/attributes";
+export { configureGoa } from "./internal/config";
+export type { GoaConfig } from "./internal/config";
 export * from "./components/goa-form-item";
 export * from "./components/goa-button";
 export * from "./components/goa-input";

@@ -1,5 +1,5 @@
 import { setShadowChecked } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 import { cssAttrValue } from "../internal/text";
 
 function host(locator: Locator): Cypress.Chainable<JQuery<HTMLElement>> {
@@ -56,6 +56,7 @@ function setOptions(locator: Locator, optionTexts: string | string[], checked: b
  * selectGoaDropdownMultiselect("Languages", ["English", "French"]);
  */
 export function selectGoaDropdownMultiselect(locator: Locator, optionTexts: string | string[]): void {
+  requireOneGoaHost("selectGoaDropdownMultiselect", "goa-dropdown-multiselect", locator, "label");
   setOptions(locator, optionTexts, true);
 }
 
@@ -68,5 +69,6 @@ export function selectGoaDropdownMultiselect(locator: Locator, optionTexts: stri
  * deselectGoaDropdownMultiselect("Languages", "French");
  */
 export function deselectGoaDropdownMultiselect(locator: Locator, optionTexts: string | string[]): void {
+  requireOneGoaHost("deselectGoaDropdownMultiselect", "goa-dropdown-multiselect", locator, "label");
   setOptions(locator, optionTexts, false);
 }

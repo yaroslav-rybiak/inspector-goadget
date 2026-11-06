@@ -1,4 +1,4 @@
-import { findGoaHosts, Locator, TextMatch } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost, TextMatch } from "../internal/locate";
 
 /**
  * Finds a goa-app-header. Yields the host; its navigation links and buttons are
@@ -21,5 +21,6 @@ export function getGoaAppHeader(locator?: Locator): Cypress.Chainable<JQuery<HTM
  * clickGoaAppHeader("Cases");
  */
 export function clickGoaAppHeader(linkText: TextMatch, locator?: Locator): void {
+  requireOneGoaHost("clickGoaAppHeader", "goa-app-header", locator, "none");
   getGoaAppHeader(locator).contains("a", linkText).click();
 }

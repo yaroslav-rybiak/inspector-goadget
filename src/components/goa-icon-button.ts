@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /** The accessible name of a goa-icon-button: its `arialabel`, or its `icon` name as a fallback. */
@@ -30,5 +30,6 @@ export function getGoaIconButton(locator: Locator): Cypress.Chainable<JQuery<HTM
  * clickGoaIconButton({ icon: "trash", within: '[data-cy="row-3"]' });
  */
 export function clickGoaIconButton(locator: Locator): void {
+  requireOneGoaHost("clickGoaIconButton", "goa-icon-button", locator, "text", goaIconButtonText);
   clickShadowControl(getGoaIconButton(locator));
 }

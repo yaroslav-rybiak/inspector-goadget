@@ -1,4 +1,4 @@
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /**
@@ -30,6 +30,7 @@ function setOpen(locator: Locator, open: boolean): void {
  * openGoaDetails("Show more");
  */
 export function openGoaDetails(locator: Locator): void {
+  requireOneGoaHost("openGoaDetails", "goa-details", locator, "text", (el) => normalizeText(el.getAttribute("heading")));
   setOpen(locator, true);
 }
 
@@ -39,5 +40,6 @@ export function openGoaDetails(locator: Locator): void {
  * @param {Locator} locator - Details heading, or a locator object.
  */
 export function closeGoaDetails(locator: Locator): void {
+  requireOneGoaHost("closeGoaDetails", "goa-details", locator, "text", (el) => normalizeText(el.getAttribute("heading")));
   setOpen(locator, false);
 }

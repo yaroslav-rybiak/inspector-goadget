@@ -1,3 +1,4 @@
+import { goaConfig } from "./config";
 import { cssAttrValue, normalizeText } from "./text";
 import { goaFormItemLabel } from "./form-item-label";
 
@@ -45,7 +46,9 @@ export interface GoaLocator {
 /**
  * What a helper accepts to find its component: a plain string, which means the
  * component's natural key (form-item label for form controls, visible text for
- * buttons and the like), or a {@link GoaLocator}.
+ * buttons and the like), a string starting with `@`, which means "inside the element
+ * whose test attribute has that value" (`"@next"` is `{ within: '[data-cy="next"]' }`,
+ * see `configureGoa`), or a {@link GoaLocator}.
  */
 export type Locator = string | GoaLocator;
 
@@ -56,11 +59,38 @@ export function matchesText(actual: string | null | undefined, wanted: TextMatch
   return wanted instanceof RegExp ? wanted.test(value) : value === normalizeText(wanted);
 }
 
+function testIdSelector(id: string): string {
+  return `[${goaConfig().testAttribute}="${cssAttrValue(id)}"]`;
+}
+
 export function toLocator(locator: Locator | undefined, key: NaturalKey): GoaLocator {
   if (locator === undefined) return {};
-  if (typeof locator !== "string") return locator;
+  if (typeof locator !== "string") {
+    if (typeof locator.within === "string" && locator.within.startsWith("@")) {
+      return { ...locator, within: testIdSelector(locator.within.slice(1)) };
+    }
+    return locator;
+  }
+  if (locator.startsWith("@")) return { within: testIdSelector(locator.slice(1)) };
   if (key === "none") return { selector: locator };
   return { [key]: locator };
+}
+
+/** Human-readable form of a locator for logs and failure messages. */
+export function describeLocator(loc: GoaLocator): string {
+  const parts: string[] = [];
+  for (const [field, value] of Object.entries(loc)) {
+    if (value === undefined) continue;
+    let shown: string;
+    if (value instanceof RegExp) shown = String(value);
+    else if (typeof value === "string" || typeof value === "number") shown = JSON.stringify(value);
+    else if (typeof value === "object" && "nodeType" in value) {
+      const el = value as Element;
+      shown = `<${el.tagName.toLowerCase()}${[...el.attributes].map((a) => ` ${a.name}="${a.value}"`).join("")}>`;
+    } else shown = `jQuery(${(value as JQuery).length})`;
+    parts.push(`${field}: ${shown}`);
+  }
+  return parts.length ? `{${parts.join(", ")}}` : "{}";
 }
 
 function isWithin(el: Element, within: Scope): boolean {
@@ -97,14 +127,19 @@ export function findGoaHosts(
   tag: string,
   locator: Locator | undefined,
   key: NaturalKey,
-  textOf: (el: Element) => string = (el) => normalizeText(el.textContent)
+  textOf: (el: Element) => string = (el) => normalizeText(el.textContent),
+  options: { log?: boolean } = {}
 ): Chainable {
   const loc = toLocator(locator, key);
   const selector = tagSelector(tag, loc);
   const within = loc.within;
+  if (options.log !== false) {
+    Cypress.log({ name: tag, message: describeLocator(loc), consoleProps: () => ({ tag, locator: loc }) });
+  }
   // A retried assertion takes its timeout from the last query before it, so every
   // query in the chain gets the requested timeout.
-  const opts = loc.timeout === undefined ? {} : { timeout: loc.timeout };
+  const opts: { timeout?: number; log?: boolean } = loc.timeout === undefined ? {} : { timeout: loc.timeout };
+  if (options.log === false) opts.log = false;
   const scoped = (chain: Chainable): Chainable =>
     within === undefined ? chain : chain.filter((_, el) => isWithin(el, within), opts);
 
@@ -136,6 +171,61 @@ export function findGoaHosts(
     });
   }
   return hosts;
+}
+
+/**
+ * Synchronous counterpart of {@link findGoaHosts}: the components matching a locator
+ * under `root`, computed with jQuery. Used where Cypress's query chain cannot carry a
+ * custom message (an empty `.filter()` fails before any chained assertion runs).
+ */
+export function matchGoaHosts(
+  root: Element | Document,
+  tag: string,
+  loc: GoaLocator,
+  textOf: (el: Element) => string = (el) => normalizeText(el.textContent)
+): Element[] {
+  const selector = tagSelector(tag, loc);
+  const within = loc.within;
+  const scoped = (els: Element[]) => (within === undefined ? els : els.filter((el) => isWithin(el, within)));
+  let hosts: Element[];
+  if (loc.label !== undefined) {
+    const label = loc.label;
+    const formItems = scoped(Cypress.$("goa-form-item", root).toArray()).filter((el) =>
+      matchesText(goaFormItemLabel(el), label)
+    );
+    if (tag !== "goa-form-item") hosts = formItems.flatMap((item) => Cypress.$(selector, item).toArray());
+    else hosts = selector === tag ? formItems : formItems.filter((el) => el.matches(selector));
+  } else {
+    hosts = scoped(Cypress.$(selector, root).toArray());
+  }
+  if (loc.text !== undefined) {
+    const text = loc.text;
+    hosts = hosts.filter((el) => matchesText(textOf(el), text));
+  }
+  return hosts;
+}
+
+/**
+ * Asserts, with retries, that exactly one component matches, so that an action fails
+ * with a message naming the helper, the tag and the locator instead of a generic
+ * "found 0 elements" from somewhere down the shadow-DOM chain. Counts under `cy.root()`,
+ * so `cy.within()` scopes it like every other helper.
+ */
+export function requireOneGoaHost(
+  helper: string,
+  tag: string,
+  locator: Locator | undefined,
+  key: NaturalKey,
+  textOf?: (el: Element) => string
+): void {
+  const loc = toLocator(locator, key);
+  const description = describeLocator(loc);
+  const opts: { log: false; timeout?: number } = { log: false };
+  if (loc.timeout !== undefined) opts.timeout = loc.timeout;
+  cy.root(opts).should(($root) => {
+    const found = matchGoaHosts($root[0], tag, loc, textOf).length;
+    expect(found, `${helper}: expected exactly one ${tag} matching ${description}, found ${found}`).to.eq(1);
+  });
 }
 
 /** Text of an attribute, or of a named slot child, or of the whole light DOM. */

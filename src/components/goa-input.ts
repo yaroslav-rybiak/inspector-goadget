@@ -1,4 +1,4 @@
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds the native input inside a goa-input.
@@ -24,6 +24,7 @@ export function getGoaInput(locator: Locator): Cypress.Chainable<JQuery<HTMLInpu
  * fillGoaInput("Basic", "Hello, World");
  */
 export function fillGoaInput(locator: Locator, text: string): void {
+  requireOneGoaHost("fillGoaInput", "goa-input", locator, "label");
   getGoaInput(locator)
     .click() // Does not work without click
     .clear()

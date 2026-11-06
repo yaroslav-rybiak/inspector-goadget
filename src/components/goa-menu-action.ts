@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /**
@@ -24,5 +24,6 @@ export function getGoaMenuAction(locator: Locator): Cypress.Chainable<JQuery<HTM
  * clickGoaMenuAction({ within: '[data-cy="assign-next-5"]' });
  */
 export function clickGoaMenuAction(locator: Locator): void {
+  requireOneGoaHost("clickGoaMenuAction", "goa-menu-action", locator, "text", (el) => normalizeText(el.getAttribute("text")));
   clickShadowControl(getGoaMenuAction(locator));
 }

@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds the native button inside a goa-link-button by its visible text.
@@ -21,5 +21,6 @@ export function getGoaLinkButton(locator: Locator): Cypress.Chainable<JQuery<HTM
  * clickGoaLinkButton("Edit");
  */
 export function clickGoaLinkButton(locator: Locator): void {
+  requireOneGoaHost("clickGoaLinkButton", "goa-link-button", locator, "text");
   clickShadowControl(getGoaLinkButton(locator));
 }

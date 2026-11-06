@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /**
@@ -25,5 +25,6 @@ export function getGoaChip(locator: Locator): Cypress.Chainable<JQuery<HTMLEleme
  * clickGoaChip("Alberta");
  */
 export function clickGoaChip(locator: Locator): void {
+  requireOneGoaHost("clickGoaChip", "goa-chip", locator, "text", (el) => normalizeText(el.getAttribute("content")));
   clickShadowControl(getGoaChip(locator));
 }

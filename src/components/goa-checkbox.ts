@@ -1,5 +1,5 @@
 import { setShadowChecked } from "../internal/actions";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /** The visible text of a goa-checkbox: its `text` attribute or its slotted content. */
@@ -35,6 +35,7 @@ export function getGoaCheckbox(locator: Locator): Cypress.Chainable<JQuery<HTMLE
  * checkGoaCheckbox("I agree to the terms");
  */
 export function checkGoaCheckbox(locator: Locator): void {
+  requireOneGoaHost("checkGoaCheckbox", "goa-checkbox", locator, "text", goaCheckboxText);
   setShadowChecked(getGoaCheckbox(locator), true);
 }
 
@@ -46,5 +47,6 @@ export function checkGoaCheckbox(locator: Locator): void {
  * uncheckGoaCheckbox("Send me the newsletter");
  */
 export function uncheckGoaCheckbox(locator: Locator): void {
+  requireOneGoaHost("uncheckGoaCheckbox", "goa-checkbox", locator, "text", goaCheckboxText);
   setShadowChecked(getGoaCheckbox(locator), false);
 }

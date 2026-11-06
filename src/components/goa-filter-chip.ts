@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { attributeOrSlotText, findGoaHosts, Locator } from "../internal/locate";
+import { attributeOrSlotText, findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds a goa-filter-chip by its content (`content` attribute or `slot="content"`).
@@ -22,6 +22,7 @@ export function getGoaFilterChip(locator: Locator): Cypress.Chainable<JQuery<HTM
  * removeGoaFilterChip("Status: Open");
  */
 export function removeGoaFilterChip(locator: Locator): void {
+  requireOneGoaHost("removeGoaFilterChip", "goa-filter-chip", locator, "text", (el) => attributeOrSlotText(el, "content", "content"));
   getGoaFilterChip(locator)
     .shadow()
     .then(($root) => {

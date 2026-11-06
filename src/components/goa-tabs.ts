@@ -1,4 +1,4 @@
-import { attributeOrSlotText, findGoaHosts, Locator, matchesText, TextMatch } from "../internal/locate";
+import { attributeOrSlotText, findGoaHosts, Locator, matchesText, requireOneGoaHost, TextMatch } from "../internal/locate";
 
 /**
  * Finds a goa-tabs container. Yields the host.
@@ -31,6 +31,7 @@ export function getGoaTab(locator: Locator): Cypress.Chainable<JQuery<HTMLElemen
  * selectGoaTab("Documents");
  */
 export function selectGoaTab(heading: TextMatch, tabs?: Locator): void {
+  requireOneGoaHost("selectGoaTab", "goa-tabs", tabs, "none");
   getGoaTabs(tabs)
     .shadow()
     .find('[role="tab"]')

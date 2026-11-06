@@ -1,5 +1,5 @@
 import { clickShadowControl } from "../internal/actions";
-import { findGoaHosts, Locator, toLocator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost, toLocator } from "../internal/locate";
 import { cssAttrValue } from "../internal/text";
 
 /**
@@ -35,5 +35,12 @@ export function getGoaFileUploadCard(locator: Locator, fileName: string): Cypres
  * deleteGoaFileUploadCard("Proof of address", "bill.pdf");
  */
 export function deleteGoaFileUploadCard(locator: Locator, fileName: string): void {
+  const loc = toLocator(locator, "label");
+  requireOneGoaHost(
+    "deleteGoaFileUploadCard",
+    "goa-file-upload-card",
+    { ...loc, selector: `${loc.selector ?? ""}[filename="${cssAttrValue(fileName)}"]` },
+    "label"
+  );
   clickShadowControl(getGoaFileUploadCard(locator, fileName).shadow().find("goa-button").shadow().find("button"));
 }

@@ -1,4 +1,4 @@
-import { attributeOrSlotText, findGoaHosts, Locator } from "../internal/locate";
+import { attributeOrSlotText, findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds a goa-accordion by its heading (`heading` attribute or `slot="headingcontent"`).
@@ -30,6 +30,7 @@ function setOpen(locator: Locator, open: boolean): void {
  * openGoaAccordion("Personal details");
  */
 export function openGoaAccordion(locator: Locator): void {
+  requireOneGoaHost("openGoaAccordion", "goa-accordion", locator, "text", (el) => attributeOrSlotText(el, "heading", "headingcontent"));
   setOpen(locator, true);
 }
 
@@ -39,5 +40,6 @@ export function openGoaAccordion(locator: Locator): void {
  * @param {Locator} locator - Accordion heading, or a locator object.
  */
 export function closeGoaAccordion(locator: Locator): void {
+  requireOneGoaHost("closeGoaAccordion", "goa-accordion", locator, "text", (el) => attributeOrSlotText(el, "heading", "headingcontent"));
   setOpen(locator, false);
 }

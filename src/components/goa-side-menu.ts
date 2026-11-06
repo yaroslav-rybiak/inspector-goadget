@@ -1,4 +1,4 @@
-import { findGoaHosts, Locator, TextMatch } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost, TextMatch } from "../internal/locate";
 import { normalizeText } from "../internal/text";
 
 /**
@@ -21,6 +21,7 @@ export function getGoaSideMenu(locator?: Locator): Cypress.Chainable<JQuery<HTML
  * clickGoaSideMenu("Dashboard");
  */
 export function clickGoaSideMenu(linkText: TextMatch, locator?: Locator): void {
+  requireOneGoaHost("clickGoaSideMenu", "goa-side-menu", locator, "none");
   getGoaSideMenu(locator).contains("a", linkText).click();
 }
 
@@ -52,6 +53,7 @@ function setGroupOpen(locator: Locator, open: boolean): void {
  * clickGoaSideMenu("Open cases");
  */
 export function openGoaSideMenuGroup(locator: Locator): void {
+  requireOneGoaHost("openGoaSideMenuGroup", "goa-side-menu-group", locator, "text", (el) => normalizeText(el.getAttribute("heading")));
   setGroupOpen(locator, true);
 }
 
@@ -61,5 +63,6 @@ export function openGoaSideMenuGroup(locator: Locator): void {
  * @param {Locator} locator - Group heading, or a locator object.
  */
 export function closeGoaSideMenuGroup(locator: Locator): void {
+  requireOneGoaHost("closeGoaSideMenuGroup", "goa-side-menu-group", locator, "text", (el) => normalizeText(el.getAttribute("heading")));
   setGroupOpen(locator, false);
 }

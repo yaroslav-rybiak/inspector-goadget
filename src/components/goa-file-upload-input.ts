@@ -1,4 +1,4 @@
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 import { getGoaFileUploadCard } from "./goa-file-upload-card";
 
 /**
@@ -54,6 +54,7 @@ export function uploadGoaFileUploadInput(
   fileName: string,
   options: { waitForCard?: boolean; waitFor?: string | (() => void) } = {}
 ): void {
+  requireOneGoaHost("uploadGoaFileUploadInput", "goa-file-upload-input", locator, "label");
   const fileType = mimeType(fileName);
   const baseName = fileName.split("/").pop() ?? fileName;
 

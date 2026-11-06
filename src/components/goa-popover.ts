@@ -1,5 +1,5 @@
 import { goaOpen, isGoaOpen } from "../internal/attributes";
-import { findGoaHosts, Locator } from "../internal/locate";
+import { findGoaHosts, Locator, requireOneGoaHost } from "../internal/locate";
 
 /**
  * Finds a goa-popover. Yields the host; `open="true"` means its content is shown.
@@ -32,6 +32,7 @@ function setOpen(locator: Locator | undefined, open: boolean): void {
  * openGoaPopover();
  */
 export function openGoaPopover(locator?: Locator): void {
+  requireOneGoaHost("openGoaPopover", "goa-popover", locator, "none");
   setOpen(locator, true);
 }
 
@@ -41,5 +42,6 @@ export function openGoaPopover(locator?: Locator): void {
  * @param {Locator} [locator] - Which popover, when there are several.
  */
 export function closeGoaPopover(locator?: Locator): void {
+  requireOneGoaHost("closeGoaPopover", "goa-popover", locator, "none");
   setOpen(locator, false);
 }

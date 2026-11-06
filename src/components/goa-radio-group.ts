@@ -1,5 +1,5 @@
 import { setShadowChecked } from "../internal/actions";
-import { findGoaHosts, Locator, matchesText, TextMatch } from "../internal/locate";
+import { findGoaHosts, Locator, matchesText, requireOneGoaHost, TextMatch } from "../internal/locate";
 import { cssAttrValue, normalizeText } from "../internal/text";
 
 /** The visible label of a goa-radio-item: its `label` attribute or its slotted content. */
@@ -60,5 +60,9 @@ export function getGoaRadioItem(group: Locator, item: RadioItemLocator): Cypress
  * selectGoaRadioGroup({ within: '[data-cy="onBehalf"]' }, { value: "yes" });
  */
 export function selectGoaRadioGroup(group: Locator, item: RadioItemLocator): void {
+  requireOneGoaHost("selectGoaRadioGroup", "goa-radio-group", group, "label");
+  getGoaRadioItem(group, item).should(($inputs) => {
+    expect($inputs.length, `selectGoaRadioGroup: expected exactly one goa-radio-item matching ${JSON.stringify(item)}, found ${$inputs.length}`).to.eq(1);
+  });
   setShadowChecked(getGoaRadioItem(group, item), true);
 }
