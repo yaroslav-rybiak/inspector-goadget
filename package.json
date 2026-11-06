@@ -1,22 +1,47 @@
 {
   "name": "inspector-goadget",
   "version": "1.1.7",
-  "description": "A Cypress library for automating UI tests on Alberta Design System components.",
-  "main": "dist/index.js",
-  "types": "index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "test": "cypress run"
+  "description": "A Cypress library for automating UI tests on Alberta Design System (goa-*) web components.",
+  "keywords": [
+    "cypress",
+    "alberta design system",
+    "goa",
+    "web components",
+    "shadow dom",
+    "testing"
+  ],
+  "homepage": "https://github.com/yaroslav-rybiak/inspector-goadget#readme",
+  "bugs": {
+    "url": "https://github.com/yaroslav-rybiak/inspector-goadget/issues"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yaroslav-rybiak/inspector-goadget.git"
   },
+  "license": "Apache-2.0",
   "author": "Yaroslav Rybiak",
-  "license": "Apache License Version 2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.tests.json --noEmit",
+    "test": "cypress run",
+    "test:open": "cypress open",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "cypress": ">=13"
+  },
   "devDependencies": {
-    "@types/cypress": "^1.1.6",
-    "cypress": "^13.16.1",
-    "typescript": "^4.0.0"
+    "cypress": "^16.2.1",
+    "typescript": "^7.0.2"
   }
 }
