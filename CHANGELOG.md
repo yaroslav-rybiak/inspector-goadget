@@ -1,5 +1,28 @@
 # Changelog
 
+## 2.1.0 - 2026-11-06
+
+### Added
+
+- Exported locators for every component: `getGoaFormItem`, `getGoaButton`, `getGoaInput`,
+  `getGoaDropdown`, `getGoaFileUploadInput`, and one for each new component below.
+- `goa-textarea`: `fillGoaTextarea`, `getGoaTextarea`.
+- `goa-checkbox`: `checkGoaCheckbox`, `uncheckGoaCheckbox`, `getGoaCheckbox`.
+- `goa-checkbox-list`: `checkGoaCheckboxList`, `uncheckGoaCheckboxList`, `getGoaCheckboxList`.
+- `goa-radio-group`: `selectGoaRadioGroup`, `getGoaRadioGroup`, `getGoaRadioItem`.
+- `goa-dropdown-multiselect`: `selectGoaDropdownMultiselect`, `deselectGoaDropdownMultiselect`,
+  `getGoaDropdownMultiselect`.
+- `goa-date-picker`: `selectGoaDatePicker`, `getGoaDatePicker`. The picker's input is
+  read-only, so dates are picked through the calendar.
+- `goa-calendar`: `selectGoaCalendar`, `getGoaCalendar`.
+- `goa-file-upload-card`: `deleteGoaFileUploadCard`, `getGoaFileUploadCard`.
+
+### Changed
+
+- Label-based helpers now match a `goa-form-item` labelled through the `label` slot as
+  well as the `label` attribute (web-components 3.x supports both). Matching is exact
+  after collapsing whitespace.
+
 ## 2.0.0 - 2026-11-06
 
 Targets Alberta Design System `@abgov/web-components` 3.x. Tested against 3.2.0.
