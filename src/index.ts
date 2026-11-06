@@ -30,3 +30,8 @@ export * from "./components/goa-menu-action";
 export * from "./components/goa-tabs";
 export * from "./components/goa-accordion";
 export * from "./components/goa-details";
+export * from "./components/goa-app-header";
+export * from "./components/goa-app-header-menu";
+export * from "./components/goa-side-menu";
+export * from "./components/goa-work-side-menu";
+export * from "./components/goa-form-stepper";
