@@ -33,6 +33,10 @@ export function getGoaFormStep(locator: Locator): Cypress.Chainable<JQuery<HTMLE
  * selectGoaFormStep("Personal details");
  */
 export function selectGoaFormStep(locator: Locator): void {
+  const button = () => getGoaFormStep(locator).shadow().find('button[data-testid="button"]');
+  // The stepper numbers its steps asynchronously after mount; until then a click
+  // carries no step number. The button's aria-label gets "Step N of M" at that point.
+  button().should("have.attr", "aria-label").and("match", /^Step \d+ of \d+/);
   // The step button is a transparent overlay (opacity 0), so visibility cannot be required.
-  clickShadowControl(getGoaFormStep(locator).shadow().find('button[data-testid="button"]'), { visible: false });
+  clickShadowControl(button(), { visible: false });
 }
