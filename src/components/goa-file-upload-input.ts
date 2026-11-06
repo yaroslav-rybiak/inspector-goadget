@@ -1,3 +1,18 @@
+import { getGoaFormItem } from "./goa-form-item";
+
+/**
+ * Finds a goa-file-upload-input by the label of its goa-form-item.
+ *
+ * Yields the goa-file-upload-input host element.
+ *
+ * @param {string} label - The label of the goa-form-item that contains the uploader.
+ * @example
+ * getGoaFileUploadInput("Proof of address").should("have.attr", "accept", ".pdf");
+ */
+export function getGoaFileUploadInput(label: string): Cypress.Chainable<JQuery<HTMLElement>> {
+  return getGoaFormItem(label).find("goa-file-upload-input");
+}
+
 /**
  * Uploads a file to a goa-file-upload-input by dropping it on the drag-and-drop area.
  *
@@ -29,8 +44,7 @@ export function uploadGoaFileUploadInput(label: string, fileName: string): void 
       throw new Error(`Unsupported file type: ${fileExtension}`);
   }
 
-  cy.get(`goa-form-item[label="${label}"]`)
-    .find("goa-file-upload-input")
+  getGoaFileUploadInput(label)
     .shadow()
     .find('div[data-testid="dragdrop"]')
     .then((dragDropArea) => {
@@ -46,13 +60,13 @@ export function uploadGoaFileUploadInput(label: string, fileName: string): void 
         });
     });
 
-  cy.get(`goa-form-item[label="${label}"]`)
+  getGoaFormItem(label)
     .find("goa-file-upload-card")
     .shadow()
     .find('div[data-testid="progress"]')
     .should("exist") // Wait for the progress bar to appear
     .then(() => {
-      cy.get(`goa-form-item[label="${label}"]`)
+      getGoaFormItem(label)
         .find("goa-file-upload-card")
         .shadow()
         .find('div[data-testid="progress"]')

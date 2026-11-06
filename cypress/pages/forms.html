@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>inspector-goadget fixture: form controls</title>
+    <!--
+      Local test target for the form-control specs in tests/.
+      Served by Cypress's file server from the project root, so the paths
+      below resolve into node_modules (see cypress.config.ts).
+    -->
+    <link rel="stylesheet" href="/node_modules/@abgov/web-components/index.css" />
+    <script type="module" src="/node_modules/ionicons/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="/node_modules/@abgov/web-components/index.js"></script>
+    <style>
+      main { max-width: 44rem; padding: var(--goa-space-xl, 2rem); font: var(--goa-typography-body-m, 1rem/1.5 sans-serif); }
+      section { margin-bottom: var(--goa-space-2xl, 3rem); }
+      section > * + * { margin-top: var(--goa-space-m, 1rem); }
+      output { font-family: monospace; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Form controls</h1>
+      <p>
+        Every control below has <code>data-record</code>; its <code>_change</code> detail is written to the
+        <code>&lt;output&gt;</code> that follows it, so specs can assert on what the component reported.
+      </p>
+
+      <section id="input">
+        <h2>goa-input</h2>
+        <goa-form-item label="Basic">
+          <goa-input name="basic" id="basic-input" data-record="basic-input"></goa-input>
+        </goa-form-item>
+        <output id="basic-input-value" data-testid="basic-input-value"></output>
+        <goa-form-item>
+          <span slot="label">Slotted input label</span>
+          <goa-input name="slotted" data-record="slotted-input"></goa-input>
+        </goa-form-item>
+        <output id="slotted-input-value" data-testid="slotted-input-value"></output>
+      </section>
+
+      <section id="textarea">
+        <h2>goa-textarea</h2>
+        <goa-form-item label="Comments">
+          <goa-textarea name="comments" data-record="comments"></goa-textarea>
+        </goa-form-item>
+        <output id="comments-value" data-testid="comments-value"></output>
+      </section>
+
+      <section id="checkbox">
+        <h2>goa-checkbox</h2>
+        <goa-form-item label="Agreement">
+          <goa-checkbox name="terms" text="I agree to the terms" value="agreed" data-record="terms"></goa-checkbox>
+        </goa-form-item>
+        <output id="terms-value" data-testid="terms-value"></output>
+        <goa-form-item label="Newsletter">
+          <goa-checkbox name="newsletter" checked="true" value="yes" data-record="newsletter">Send me the newsletter</goa-checkbox>
+        </goa-form-item>
+        <output id="newsletter-value" data-testid="newsletter-value"></output>
+      </section>
+
+      <section id="checkbox-list">
+        <h2>goa-checkbox-list</h2>
+        <goa-form-item label="Toppings">
+          <goa-checkbox-list name="toppings" data-record="toppings">
+            <goa-checkbox name="cheese" text="Cheese" value="cheese"></goa-checkbox>
+            <goa-checkbox name="olives" text="Olives" value="olives"></goa-checkbox>
+            <goa-checkbox name="onions" text="Onions" value="onions"></goa-checkbox>
+          </goa-checkbox-list>
+        </goa-form-item>
+        <output id="toppings-value" data-testid="toppings-value"></output>
+      </section>
+
+      <section id="radio-group">
+        <h2>goa-radio-group</h2>
+        <goa-form-item label="Size">
+          <goa-radio-group name="size" data-record="size">
+            <goa-radio-item value="s" label="Small"></goa-radio-item>
+            <goa-radio-item value="m" label="Medium"></goa-radio-item>
+            <goa-radio-item value="l" label="Large"></goa-radio-item>
+          </goa-radio-group>
+        </goa-form-item>
+        <output id="size-value" data-testid="size-value"></output>
+      </section>
+
+      <section id="dropdown">
+        <h2>goa-dropdown</h2>
+        <goa-form-item label="Basic dropdown">
+          <goa-dropdown name="colour" id="basic-dropdown" data-record="colour">
+            <goa-dropdown-item value="red" label="Red"></goa-dropdown-item>
+            <goa-dropdown-item value="green" label="Green"></goa-dropdown-item>
+            <goa-dropdown-item value="blue" label="Blue"></goa-dropdown-item>
+          </goa-dropdown>
+        </goa-form-item>
+        <output id="colour-value" data-testid="colour-value"></output>
+      </section>
+
+      <section id="dropdown-multiselect">
+        <h2>goa-dropdown-multiselect</h2>
+        <goa-form-item label="Languages">
+          <goa-dropdown-multiselect name="languages" data-record="languages">
+            <goa-dropdown-item value="en" label="English"></goa-dropdown-item>
+            <goa-dropdown-item value="fr" label="French"></goa-dropdown-item>
+            <goa-dropdown-item value="uk" label="Ukrainian"></goa-dropdown-item>
+          </goa-dropdown-multiselect>
+        </goa-form-item>
+        <output id="languages-value" data-testid="languages-value"></output>
+      </section>
+
+      <section id="date-picker">
+        <h2>goa-date-picker</h2>
+        <goa-form-item label="Start date">
+          <goa-date-picker name="start" data-record="start"></goa-date-picker>
+        </goa-form-item>
+        <output id="start-value" data-testid="start-value"></output>
+      </section>
+
+      <section id="calendar">
+        <h2>goa-calendar</h2>
+        <goa-calendar name="appointment" value="2026-11-06" data-record="appointment"></goa-calendar>
+        <output id="appointment-value" data-testid="appointment-value"></output>
+      </section>
+
+      <section id="file-upload">
+        <h2>goa-file-upload-input</h2>
+        <goa-form-item label="Upload a file">
+          <goa-file-upload-input id="uploader" accept="image/*,.pdf" maxfilesize="5MB"></goa-file-upload-input>
+          <div id="upload-cards"></div>
+        </goa-form-item>
+        <output id="upload-events" data-testid="upload-events"></output>
+      </section>
+    </main>
+
+    <script type="module">
+      // Record the `_change` detail of every control marked data-record.
+      const show = (detail) => {
+        if (detail == null) return "";
+        if (typeof detail !== "object") return String(detail);
+        if (typeof detail.checked === "boolean") return `${detail.checked ? "checked" : "unchecked"}:${detail.value}`;
+        if (typeof detail.valueStr === "string") return detail.valueStr;
+        if (typeof detail.value === "string") return detail.value;
+        return JSON.stringify(detail.value ?? detail);
+      };
+      for (const el of document.querySelectorAll("[data-record]")) {
+        const out = document.getElementById(`${el.dataset.record}-value`);
+        el.addEventListener("_change", (event) => {
+          out.textContent = show(event.detail);
+        });
+      }
+
+      // goa-file-upload-input: mimic an app that uploads the selected file and
+      // renders a goa-file-upload-card whose progress goes 0 -> 100.
+      const uploader = document.getElementById("uploader");
+      const cards = document.getElementById("upload-cards");
+      const uploadEvents = document.getElementById("upload-events");
+      uploader.addEventListener("_selectFile", (event) => {
+        const file = event.detail.file;
+        const card = document.createElement("goa-file-upload-card");
+        card.setAttribute("filename", file.name);
+        card.setAttribute("size", String(file.size));
+        card.setAttribute("type", file.type);
+        card.setAttribute("progress", "0");
+        for (const name of ["_cancel", "_delete"]) {
+          card.addEventListener(name, () => {
+            uploadEvents.textContent = `${name} ${file.name}`;
+            card.remove();
+          });
+        }
+        cards.append(card);
+
+        let progress = 0;
+        const timer = setInterval(() => {
+          progress = Math.min(progress + 20, 100);
+          card.setAttribute("progress", String(progress));
+          if (progress >= 100) clearInterval(timer);
+        }, 100);
+      });
+    </script>
+  </body>
+</html>

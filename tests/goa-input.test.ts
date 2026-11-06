@@ -1,23 +1,20 @@
-import { fillGoaInput } from "../src/components/goa-input";
+import { fillGoaInput, getGoaInput } from "../src/components/goa-input";
 import { visitFixturePage } from "./fixture-page";
 
-describe("fillGoaInput", () => {
+describe("goa-input", () => {
   beforeEach(() => {
-    visitFixturePage();
+    visitFixturePage("forms");
   });
 
-  it("types 'Hello, World' into the input labelled 'Basic'", () => {
+  it("fillGoaInput types 'Hello, World' into the input labelled 'Basic'", () => {
     fillGoaInput("Basic", "Hello, World");
-    cy.get('goa-form-item[label="Basic"]')
-      .find("goa-input")
-      .should("have.value", "Hello, World");
+    getGoaInput("Basic").should("have.value", "Hello, World");
+    cy.get('[data-testid="basic-input-value"]').should("have.text", "Hello, World");
   });
 
-  it("replaces existing text instead of appending to it", () => {
+  it("fillGoaInput replaces existing text instead of appending to it", () => {
     fillGoaInput("Basic", "Hello, World");
     fillGoaInput("Basic", "Goodbye, World");
-    cy.get('goa-form-item[label="Basic"]')
-      .find("goa-input")
-      .should("have.value", "Goodbye, World");
+    getGoaInput("Basic").should("have.value", "Goodbye, World");
   });
 });

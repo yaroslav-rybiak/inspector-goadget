@@ -1,6 +1,6 @@
-/** Local page with one example per helper. Served by Cypress from the project root. */
-export const FIXTURE_PAGE = "cypress/pages/index.html";
+/** Local fixture pages under cypress/pages, served by Cypress from the project root. */
+export type FixturePage = "buttons" | "forms";
 
-export function visitFixturePage(): void {
-  cy.visit(FIXTURE_PAGE);
+export function visitFixturePage(page: FixturePage): void {
+  cy.visit(`cypress/pages/${page}.html`);
 }

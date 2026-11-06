@@ -1,3 +1,4 @@
+export * from "./components/goa-form-item";
 export * from "./components/goa-button";
 export * from "./components/goa-input";
 export * from "./components/goa-dropdown";

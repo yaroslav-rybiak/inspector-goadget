@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>inspector-goadget fixture: buttons</title>
+    <!--
+      Local test target for the Cypress specs in tests/.
+      Served by Cypress's file server from the project root, so the paths
+      below resolve into node_modules (see cypress.config.ts).
+    -->
+    <link rel="stylesheet" href="/node_modules/@abgov/web-components/index.css" />
+    <script type="module" src="/node_modules/ionicons/dist/ionicons/ionicons.esm.js"></script>
+    <script type="module" src="/node_modules/@abgov/web-components/index.js"></script>
+    <style>
+      main {
+        max-width: 40rem;
+        padding: var(--goa-space-xl, 2rem);
+        font: var(--goa-typography-body-m, 1rem/1.5 sans-serif);
+      }
+      section {
+        margin-bottom: var(--goa-space-2xl, 3rem);
+      }
+      section > * + * {
+        margin-top: var(--goa-space-m, 1rem);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Buttons</h1>
+
+      <section id="button">
+        <h2>goa-button</h2>
+        <goa-button type="primary">Primary Button</goa-button>
+        <goa-button type="secondary">Submit and continue</goa-button>
+        <p>Last clicked: <output id="last-clicked" data-testid="last-clicked"></output></p>
+      </section>
+
+    </main>
+
+    <script type="module">
+      // goa-button: record which button fired `_click` so specs can assert on it.
+      const lastClicked = document.getElementById("last-clicked");
+      for (const button of document.querySelectorAll("goa-button")) {
+        button.addEventListener("_click", () => {
+          lastClicked.textContent = button.textContent.trim();
+        });
+      }
+    </script>
+  </body>
+</html>
