@@ -1,4 +1,6 @@
-export * from "./components/goa-form-item goa-button goa-input";
+export * from "./components/goa-form-item";
+export * from "./components/goa-button";
+export * from "./components/goa-input";
 export * from "./components/goa-textarea";
 export * from "./components/goa-checkbox";
 export * from "./components/goa-checkbox-list";
