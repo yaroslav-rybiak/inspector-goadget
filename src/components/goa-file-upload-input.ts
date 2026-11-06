@@ -1,16 +1,16 @@
 /**
- * Uploads a file to a goa-file-upload-input element within a goa-form-item.
+ * Uploads a file to a goa-file-upload-input by dropping it on the drag-and-drop area.
  *
- * This function finds the goa-form-item with the specified label,
- * locates the associated goa-file-upload-input element, and performs
- * a drag-and-drop upload of the provided file.
+ * Finds the goa-form-item with the given label, locates the goa-file-upload-input
+ * inside it, drops the fixture file on it, then waits for the goa-file-upload-card
+ * progress bar to appear and disappear.
  *
- * @param {string} label - The label of the goa-form-item to locate.
- * @param {string} fileName - The name of the file to upload (must exist in the Cypress fixtures folder).
+ * @param {string} label - The label of the goa-form-item that contains the uploader.
+ * @param {string} fileName - A file in the Cypress fixtures folder (jpg, jpeg, png or pdf).
  * @example
- * uploadFileToGoaInput('Upload a file', 'ExampleFile.pdf');
+ * uploadGoaFileUploadInput("Upload a file", "ExampleFile.pdf");
  */
-export function uploadFileToGoaInput(label: string, fileName: string): void {
+export function uploadGoaFileUploadInput(label: string, fileName: string): void {
   const fileExtension = fileName.split(".").pop()?.toLowerCase();
   let fileType: string;
 

@@ -1,7 +1,7 @@
-import { uploadFileToGoaInput } from "../src/components/goa-file-upload";
+import { uploadGoaFileUploadInput } from "../src/components/goa-file-upload-input";
 import { visitFixturePage } from "./fixture-page";
 
-describe("uploadFileToGoaInput", () => {
+describe("uploadGoaFileUploadInput", () => {
   const label = "Upload a file";
   const fileNames = [
     "ExampleFile.pdf",
@@ -16,7 +16,7 @@ describe("uploadFileToGoaInput", () => {
 
   fileNames.forEach((fileName) => {
     it(`uploads ${fileName} through the input labelled '${label}'`, () => {
-      uploadFileToGoaInput(label, fileName);
+      uploadGoaFileUploadInput(label, fileName);
       cy.get(`goa-form-item[label="${label}"]`)
         .find("goa-file-upload-card")
         .shadow()

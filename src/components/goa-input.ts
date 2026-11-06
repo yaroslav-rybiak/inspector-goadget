@@ -1,16 +1,15 @@
 /**
- * Types text into a goa-input element within a goa-form-item.
+ * Clears a goa-input and types new text into it.
  *
- * This function finds the goa-form-item with the specified label,
- * locates the associated goa-input element, clicks into it,
- * and types the provided text.
+ * Finds the goa-form-item with the given label, locates the goa-input inside it,
+ * pierces the shadow DOM, clicks the native input, clears it and types the text.
  *
- * @param {string} label - The label of the goa-form-item to locate.
- * @param {string} text - The text to type into the input element.
+ * @param {string} label - The label of the goa-form-item that contains the input.
+ * @param {string} text - The text to type.
  * @example
- * typeInGoaInput('Basic', 'Hello, World');
+ * fillGoaInput("Basic", "Hello, World");
  */
-export function typeInGoaInput(label: string, text: string): void {
+export function fillGoaInput(label: string, text: string): void {
   cy.get(`goa-form-item[label="${label}"]`)
     .find("goa-input")
     .shadow()

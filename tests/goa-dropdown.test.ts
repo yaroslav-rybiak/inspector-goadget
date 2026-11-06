@@ -1,14 +1,14 @@
-import { selectGoaDropdownOption } from "../src/components/goa-dropdown";
+import { selectGoaDropdown } from "../src/components/goa-dropdown";
 import { visitFixturePage } from "./fixture-page";
 
-describe("selectGoaDropdownOption", () => {
+describe("selectGoaDropdown", () => {
   beforeEach(() => {
     visitFixturePage();
   });
 
   ["Red", "Green", "Blue"].forEach((optionText) => {
     it(`selects '${optionText}' in the dropdown labelled 'Basic dropdown'`, () => {
-      selectGoaDropdownOption("Basic dropdown", optionText);
+      selectGoaDropdown("Basic dropdown", optionText);
       cy.get('goa-form-item[label="Basic dropdown"]')
         .find("goa-dropdown")
         .shadow()
