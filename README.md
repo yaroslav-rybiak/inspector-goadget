@@ -45,8 +45,11 @@ Every component has two kinds of helper:
 The first argument of every helper is a **locator**. A plain string means the component's
 natural key: the label of the surrounding `goa-form-item` for form controls, the visible
 text for buttons, chips and checkboxes, the aria label or icon name for icon buttons, the
-heading for modals, drawers, tabs and accordions. For anything else pass an object; the
-fields combine.
+heading for modals, drawers, tabs and accordions. A string starting with `@` means "the
+component inside the element whose test attribute has that value": `"@next"` is short for
+`{ within: '[data-cy="next"]' }`. The attribute defaults to `data-cy`; change it once in
+your support file with `configureGoa({ testAttribute: "data-testid" })`. For anything else
+pass an object; the fields combine.
 
 | Field      | Matches                                                                                    |
 | ---------- | ------------------------------------------------------------------------------------------ |
@@ -70,12 +73,21 @@ matches nothing afterwards, and the failure then reads as "found 0 elements".
 ```ts
 fillGoaInput("First name", "Ada");                                  // by form-item label
 fillGoaInput({ name: "firstName" }, "Ada");                         // by name attribute
-clickGoaButton({ within: '[data-cy="next"]' });                     // the only button in a wrapper
-clickGoaButton({ within: '[data-cy="start"]', timeout: 60000 });    // slow dashboard
-selectGoaRadioGroup({ within: '[data-cy="onBehalf"]' }, { value: "yes" });
+clickGoaButton("@next");                                            // the only button inside [data-cy="next"]
+clickGoaButton({ within: '[data-cy="acknowledge"]:first' });        // jQuery extensions work in within
+clickGoaButton({ within: "@start", timeout: 60000 });               // slow dashboard
+selectGoaRadioGroup("@onBehalf", { value: "yes" });
 selectGoaDropdown({ name: "worker" }, /^Jane Doe,/, { filter: "Jane" });
 getGoaModal("Confirm submission").within(() => clickGoaButton("Yes, submit"));
 ```
+
+Actions require exactly one match and fail otherwise with a message that names the helper,
+the component and the locator, for example
+`clickGoaButton: expected exactly one goa-button matching {within: "[data-cy=\"nope\"]"}, found 0`.
+Locators yield every match, so `getGoaButton({ text: "View", within: $card }).should("have.length", 3)`
+and `getGoaButton("Continue").first()` both work. Note that `within: ".list :first"` scopes to
+the first container, not to the first matching component; use `.first()` on the locator for
+that. Every locator also writes its component and locator to the Cypress command log.
 
 Two Cypress limits to know. Cypress cannot traverse into the shadow DOM of an empty
 match, so assert absence on the host (`cy.get("goa-button").filter(...).should("not.exist")`)
@@ -93,18 +105,40 @@ components; use the exported `goaOpen()` callback: `getGoaModal("Confirm").shoul
 | `goa-checkbox`            | `checkGoaCheckbox(l)`, `uncheckGoaCheckbox(l)`                                               | `getGoaCheckbox(l)` → `input`                       |
 | `goa-checkbox-list`       | `checkGoaCheckboxList(l, texts)`, `uncheckGoaCheckboxList(l, texts)`                         | `getGoaCheckboxList(l)` → host                      |
 | `goa-radio-group`         | `selectGoaRadioGroup(l, item)` where item is a label or `{ value }`                          | `getGoaRadioGroup(l)` → host, `getGoaRadioItem(l, item)` → `input` |
-| `goa-dropdown`            | `selectGoaDropdown(l, option, { filter? })`, `clearGoaDropdown(l)`                           | `getGoaDropdown(l)` → combobox `input`              |
-| `goa-dropdown-multiselect`| `selectGoaDropdownMultiselect(l, texts)`, `deselectGoaDropdownMultiselect(l, texts)`         | `getGoaDropdownMultiselect(l)` → combobox           |
+| `goa-dropdown`            | `selectGoaDropdown(l, option, { filter? })`, `clearGoaDropdown(l)`                           | `getGoaDropdown(l)` → combobox `input`, `getGoaDropdownOptions(l, { filter?, values? })` → `string[]` or `{ value, text }[]` |
+| `goa-dropdown-multiselect`| `selectGoaDropdownMultiselect(l, texts)`, `deselectGoaDropdownMultiselect(l, texts)`         | `getGoaDropdownMultiselect(l)` → combobox, `getGoaDropdownMultiselectOptions(l, { checked? })` → `string[]` or `{ text, checked }[]` |
 | `goa-date-picker`         | `selectGoaDatePicker(l, date)`                                                               | `getGoaDatePicker(l)` → display `input`             |
 | `goa-calendar`            | `selectGoaCalendar(date, l?)`                                                                | `getGoaCalendar(l?)` → host                         |
 | `goa-file-upload-input`   | `uploadGoaFileUploadInput(l, fileName, { waitFor?, waitForCard? })`                          | `getGoaFileUploadInput(l)` → host                   |
 | `goa-file-upload-card`    | `deleteGoaFileUploadCard(l, fileName)`                                                       | `getGoaFileUploadCard(l, fileName)` → host          |
 
 `l` is a locator. `texts` accepts one string or an array. `date` accepts a `Date` or a
-`YYYY-MM-DD` string. `uploadGoaFileUploadInput` drops a file from the Cypress fixtures folder
-(jpg, jpeg, png or pdf) and waits for the matching upload card to finish. Applications that
-render their own upload UI pass `{ waitFor }` with a selector that must exist afterwards or
-a callback that does the waiting; `{ waitForCard: false }` returns right after the drop.
+`YYYY-MM-DD` string.
+
+`getGoaDropdownOptions` reads what a dropdown offers without changing its selection: it
+opens the list (typing `filter` over the current text first, for filterable dropdowns),
+collects the visible options, restores the text and closes the list. That makes "is not
+offered" assertable:
+
+```ts
+getGoaDropdownOptions("Province").should("include", "Alberta");
+getGoaDropdownOptions({ name: "worker" }, { filter: "Jane" }).should("deep.equal", ["Jane Doe, CEC"]);
+getGoaDropdownOptions({ name: "worker" }, { filter: viewer.name }).should("be.empty");
+getGoaDropdownOptions("Province", { values: true }).should("deep.include", { value: "AB", text: "Alberta" });
+```
+
+`uploadGoaFileUploadInput` drops a file from the Cypress fixtures folder (jpg, jpeg, png or
+pdf) and waits for the matching upload card to finish. Applications that render their own
+upload UI pass `{ waitFor }` with a selector that must exist afterwards or a callback that
+does the waiting; most key the wait on the file name:
+
+```ts
+uploadGoaFileUploadInput("@documents", "sin.jpg", {
+  waitFor: '.file-container:contains("sin.jpg") .uploaded-icon',
+});
+```
+
+`{ waitForCard: false }` returns right after the drop.
 
 ### Buttons, chips, pagination
 
@@ -162,12 +196,108 @@ instance), so assert on the locator's element or listen for the event in your ap
 
 ### Coverage
 
-Covered: the 39 components in the tables above, which is every form control, button, chip,
-overlay, notification, menu, tab, accordion, details, header, side menu and the form
-stepper. Planned next: table and sort headers, and assertion locators for callout, badge,
-tooltip and the progress indicators. Layout-only components (block, grid, container, card,
-divider, spacer, text, icon, skeleton, spinner, layouts, footer, hero banner) need no
-helpers. The experimental public-form components are out of scope.
+Every element `@abgov/web-components` 3.2.0 defines, and where this library stands on it
+(43 covered, 30 not needed, 13 planned, 10 out of scope). "Not needed" means a layout or display component whose content is ordinary
+light DOM, reachable with plain Cypress commands.
+
+| Component | Status | Helpers or note |
+| --- | --- | --- |
+| `goa-accordion` | covered | openGoaAccordion, closeGoaAccordion, getGoaAccordion |
+| `goa-app-footer` | not needed | layout or display only; use plain Cypress |
+| `goa-app-footer-meta-section` | not needed | layout or display only; use plain Cypress |
+| `goa-app-footer-nav-section` | not needed | layout or display only; use plain Cypress |
+| `goa-app-header` | covered | clickGoaAppHeader, getGoaAppHeader |
+| `goa-app-header-menu` | covered | openGoaAppHeaderMenu, selectGoaAppHeaderMenu, getGoaAppHeaderMenu |
+| `goa-app-header-navigation` | not needed | layout or display only; use plain Cypress |
+| `goa-badge` | planned | 2.5.0 (assertion locator) |
+| `goa-block` | not needed | layout or display only; use plain Cypress |
+| `goa-button` | covered | clickGoaButton, getGoaButton |
+| `goa-button-group` | not needed | layout or display only; use plain Cypress |
+| `goa-calendar` | covered | selectGoaCalendar, getGoaCalendar |
+| `goa-callout` | planned | 2.5.0 (assertion locator) |
+| `goa-card` | not needed | layout or display only; use plain Cypress |
+| `goa-card-actions` | not needed | layout or display only; use plain Cypress |
+| `goa-card-content` | not needed | layout or display only; use plain Cypress |
+| `goa-card-group` | not needed | layout or display only; use plain Cypress |
+| `goa-card-image` | not needed | layout or display only; use plain Cypress |
+| `goa-checkbox` | covered | checkGoaCheckbox, uncheckGoaCheckbox, getGoaCheckbox |
+| `goa-checkbox-list` | covered | checkGoaCheckboxList, uncheckGoaCheckboxList, getGoaCheckboxList |
+| `goa-chip` | covered | clickGoaChip, getGoaChip |
+| `goa-circular-progress` | planned | 2.5.0 (assertion locator) |
+| `goa-container` | not needed | layout or display only; use plain Cypress |
+| `goa-data-grid` | planned | 2.5.0 (with goa-table) |
+| `goa-date-picker` | covered | selectGoaDatePicker, getGoaDatePicker |
+| `goa-details` | covered | openGoaDetails, closeGoaDetails, getGoaDetails |
+| `goa-divider` | not needed | layout or display only; use plain Cypress |
+| `goa-drawer` | covered | closeGoaDrawer, getGoaDrawer |
+| `goa-dropdown` | covered | selectGoaDropdown, clearGoaDropdown, getGoaDropdown, getGoaDropdownOptions |
+| `goa-dropdown-item` | covered | read through getGoaDropdownOptions |
+| `goa-dropdown-multiselect` | covered | selectGoaDropdownMultiselect, deselectGoaDropdownMultiselect, getGoaDropdownMultiselect, getGoaDropdownMultiselectOptions |
+| `goa-fieldset` | out of scope | experimental public-form system |
+| `goa-file-upload-card` | covered | deleteGoaFileUploadCard, getGoaFileUploadCard |
+| `goa-file-upload-input` | covered | uploadGoaFileUploadInput, getGoaFileUploadInput |
+| `goa-filter-chip` | covered | removeGoaFilterChip, getGoaFilterChip |
+| `goa-focus-trap` | planned | internal to modal/drawer |
+| `goa-form-item` | covered | getGoaFormItem |
+| `goa-form-step` | covered | selectGoaFormStep, getGoaFormStep |
+| `goa-form-stepper` | covered | getGoaFormStepper |
+| `goa-grid` | not needed | layout or display only; use plain Cypress |
+| `goa-hero-banner` | not needed | layout or display only; use plain Cypress |
+| `goa-icon` | not needed | layout or display only; use plain Cypress |
+| `goa-icon-button` | covered | clickGoaIconButton, getGoaIconButton |
+| `goa-input` | covered | fillGoaInput, getGoaInput |
+| `goa-layout-full-nav` | not needed | layout or display only; use plain Cypress |
+| `goa-linear-progress` | planned | 2.5.0 (assertion locator) |
+| `goa-link` | covered | clickGoaLink, getGoaLink |
+| `goa-link-button` | covered | clickGoaLinkButton, getGoaLinkButton |
+| `goa-menu-action` | covered | clickGoaMenuAction, getGoaMenuAction |
+| `goa-menu-button` | covered | openGoaMenuButton, selectGoaMenuButton, getGoaMenuButton |
+| `goa-microsite-header` | planned | later |
+| `goa-modal` | covered | closeGoaModal, getGoaModal |
+| `goa-notification` | covered | dismissGoaNotification, getGoaNotification |
+| `goa-one-column-layout` | not needed | layout or display only; use plain Cypress |
+| `goa-page-block` | not needed | layout or display only; use plain Cypress |
+| `goa-pages` | not needed | layout or display only; use plain Cypress |
+| `goa-pagination` | covered | selectGoaPagination, getGoaPagination |
+| `goa-popover` | covered | openGoaPopover, closeGoaPopover, getGoaPopover |
+| `goa-public-form` | out of scope | experimental public-form system |
+| `goa-public-form-page` | out of scope | experimental public-form system |
+| `goa-public-form-summary` | out of scope | experimental public-form system |
+| `goa-public-form-task` | out of scope | experimental public-form system |
+| `goa-public-form-task-list` | out of scope | experimental public-form system |
+| `goa-public-subform` | out of scope | experimental public-form system |
+| `goa-public-subform-index` | out of scope | experimental public-form system |
+| `goa-push-drawer` | covered | closeGoaPushDrawer, getGoaPushDrawer |
+| `goa-push-drawer-internal` | not needed | layout or display only; use plain Cypress |
+| `goa-radio-group` | covered | selectGoaRadioGroup, getGoaRadioGroup |
+| `goa-radio-item` | covered | getGoaRadioItem (through its group) |
+| `goa-scroll-panel` | not needed | layout or display only; use plain Cypress |
+| `goa-scrollable` | not needed | layout or display only; use plain Cypress |
+| `goa-side-menu` | covered | clickGoaSideMenu, getGoaSideMenu |
+| `goa-side-menu-group` | covered | openGoaSideMenuGroup, closeGoaSideMenuGroup, getGoaSideMenuGroup |
+| `goa-side-menu-heading` | covered | light-DOM text inside getGoaSideMenu |
+| `goa-skeleton` | not needed | layout or display only; use plain Cypress |
+| `goa-spacer` | not needed | layout or display only; use plain Cypress |
+| `goa-spinner` | not needed | layout or display only; use plain Cypress |
+| `goa-tab` | covered | getGoaTab |
+| `goa-table` | planned | 2.5.0 |
+| `goa-table-sort-header` | planned | 2.5.0 |
+| `goa-tabs` | covered | selectGoaTab, getGoaTabs |
+| `goa-temp-notification` | covered | getGoaTempNotification |
+| `goa-temp-notification-ctrl` | planned | later |
+| `goa-text` | not needed | layout or display only; use plain Cypress |
+| `goa-textarea` | covered | fillGoaTextarea, getGoaTextarea |
+| `goa-three-column-layout` | not needed | layout or display only; use plain Cypress |
+| `goa-tooltip` | planned | 2.5.0 (assertion locator) |
+| `goa-two-column-layout` | not needed | layout or display only; use plain Cypress |
+| `goa-work-side-menu` | covered | openGoaWorkSideMenu, closeGoaWorkSideMenu, getGoaWorkSideMenu |
+| `goa-work-side-menu-group` | covered | openGoaWorkSideMenuGroup, closeGoaWorkSideMenuGroup, getGoaWorkSideMenuGroup |
+| `goa-work-side-menu-item` | covered | clickGoaWorkSideMenuItem, getGoaWorkSideMenuItem |
+| `goa-work-side-notification-item` | planned | later |
+| `goa-work-side-notification-panel` | planned | later |
+| `goa-workspace-layout` | not needed | layout or display only; use plain Cypress |
+| `goax-form-step` | out of scope | experimental public-form system |
+| `goax-form-stepper` | out of scope | experimental public-form system |
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
 

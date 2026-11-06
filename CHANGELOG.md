@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.4.0 - 2026-11-06
+
+Shaped by the second round of feedback from the DEED e2e suite.
+
+### Added
+
+- **Readable failures.** Every action asserts that exactly one component matches and
+  otherwise fails with `clickGoaButton: expected exactly one goa-button matching {...},
+  found 0`. Every locator writes its component and locator to the Cypress command log.
+  Locators are unchanged and still yield every match.
+- **`@id` shorthand.** `clickGoaButton("@next")` or `within: "@next"` means the component
+  inside the element whose test attribute is `next`. The attribute defaults to `data-cy`;
+  `configureGoa({ testAttribute })` changes it.
+- `getGoaDropdownOptions(l, { filter?, values? })` reads the options a dropdown offers,
+  as texts or `{ value, text }`, without changing the selection and without firing
+  `_change`. `getGoaDropdownMultiselectOptions(l, { checked? })` does the same for the
+  multiselect.
+- README: coverage table of all 96 `goa-*` elements, file-name keyed `waitFor` example,
+  note on `:first` scoping and multi-match locators.
+
+### Changed
+
+- `selectGoaDropdown` with `{ filter }` types over the current text instead of using the
+  clear icon, so it no longer fires an intermediate `_change` with an empty value.
+
 ## 2.3.0 - 2026-11-06
 
 Shaped by the first production use, the DEED e2e suite (IES intake and Case Management,
