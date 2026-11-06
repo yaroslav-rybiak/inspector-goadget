@@ -6,13 +6,16 @@ line instead of chaining `.shadow().find(...)` by hand.
 
 ## Supported versions
 
-| Dependency                | Supported                          |
-| ------------------------- | ---------------------------------- |
-| `@abgov/web-components`   | 3.x (tested against 3.2.0)         |
-| `cypress`                 | 13 or newer (peer dependency)      |
-| Node                      | 22 or newer                        |
+| Dependency                | Supported                                                  |
+| ------------------------- | ---------------------------------------------------------- |
+| `@abgov/web-components`   | 2.x and 3.x. The suite runs against 2.5.0 and 3.2.0 in CI. |
+| `cypress`                 | 13 or newer (peer dependency); developed and tested on 16  |
+| Node                      | 20 or newer                                                |
 
-For `@abgov/web-components` 1.x use `inspector-goadget@1`.
+Applications built on `@abgov/angular-components` or `@abgov/react-components` render the
+same `goa-*` elements inside their wrapper elements, so the helpers work there unchanged;
+a `data-cy` on the wrapper is a natural `within` scope. For `@abgov/web-components` 1.x
+use `inspector-goadget@1`.
 
 ## Installation
 
@@ -52,15 +55,22 @@ accordions. For anything else pass an object; the fields combine.
 | `testid`   | The `testid` attribute                                                                      |
 | `icon`     | The `icon` attribute (icon buttons, menu actions)                                           |
 | `selector` | Any extra CSS selector appended to the tag, for example `[data-cy="next"]`                  |
-| `within`   | A container: CSS selector, element or jQuery collection. Matches components inside it, or the container itself when it is the component, so `data-cy` can sit on a wrapper or on the host |
+| `within`   | A container: selector string, element or jQuery collection. Matches components inside it, or the container itself when it is the component, so `data-cy` can sit on a wrapper or on the host |
+| `timeout`  | How long to wait for the component to appear and upgrade, in ms, instead of `defaultCommandTimeout` |
 
 Strings match exactly after collapsing whitespace; `label` and `text` also accept a
 `RegExp`. `cy.within()` scopes every helper as well.
+
+A `within` string may use jQuery selector extensions such as `:first` or `:contains()`.
+It is evaluated again on every retry, which makes it the safe choice on pages that
+re-render: an element or jQuery collection captured before a re-render is detached and
+matches nothing afterwards, and the failure then reads as "found 0 elements".
 
 ```ts
 fillGoaInput("First name", "Ada");                                  // by form-item label
 fillGoaInput({ name: "firstName" }, "Ada");                         // by name attribute
 clickGoaButton({ within: '[data-cy="next"]' });                     // the only button in a wrapper
+clickGoaButton({ within: '[data-cy="start"]', timeout: 60000 });     // slow dashboard
 selectGoaRadioGroup({ within: '[data-cy="onBehalf"]' }, { value: "yes" });
 selectGoaDropdown({ name: "worker" }, /^Jane Doe,/, { filter: "Jane" });
 getGoaModal("Confirm submission").within(() => clickGoaButton("Yes, submit"));
@@ -86,13 +96,14 @@ components; use the exported `goaOpen()` callback: `getGoaModal("Confirm").shoul
 | `goa-dropdown-multiselect`| `selectGoaDropdownMultiselect(l, texts)`, `deselectGoaDropdownMultiselect(l, texts)`         | `getGoaDropdownMultiselect(l)` → combobox           |
 | `goa-date-picker`         | `selectGoaDatePicker(l, date)`                                                               | `getGoaDatePicker(l)` → display `input`             |
 | `goa-calendar`            | `selectGoaCalendar(date, l?)`                                                                | `getGoaCalendar(l?)` → host                         |
-| `goa-file-upload-input`   | `uploadGoaFileUploadInput(l, fileName, { waitForCard? })`                                    | `getGoaFileUploadInput(l)` → host                   |
+| `goa-file-upload-input`   | `uploadGoaFileUploadInput(l, fileName, { waitFor?, waitForCard? })`                          | `getGoaFileUploadInput(l)` → host                   |
 | `goa-file-upload-card`    | `deleteGoaFileUploadCard(l, fileName)`                                                       | `getGoaFileUploadCard(l, fileName)` → host          |
 
 `l` is a locator. `texts` accept one string or an array. `date` accepts a `Date` or a
 `YYYY-MM-DD` string. `uploadGoaFileUploadInput` drops a file from the Cypress fixtures folder
-(jpg, jpeg, png or pdf) and waits for the matching upload card to finish; pass
-`{ waitForCard: false }` for applications that render no card.
+(jpg, jpeg, png or pdf) and waits for the matching upload card to finish. Applications that
+render their own upload UI pass `{ waitFor }` with a selector that must exist afterwards or
+a callback that does the waiting; `{ waitForCard: false }` returns right after the drop.
 
 ### Buttons, chips, pagination
 
@@ -170,12 +181,13 @@ installed in your project. See [CHANGELOG.md](CHANGELOG.md) for the full list.
 
 ## Development
 
-The specs in `tests/` run against a local fixture page, `cypress/pages/index.html`, which
-loads the pinned `@abgov/web-components` from `node_modules`. No network access is needed.
+The specs in `tests/` run against local fixture pages under `cypress/pages/`, which load
+the pinned `@abgov/web-components` from `node_modules`. No network access is needed.
 
 ```sh
 npm install
-npm test        # headless, Chrome
+npm test            # headless Chrome, web-components 3.2.0
+WC=2 npm test       # the same suite against web-components 2.5.0
 npm run test:open
 ```
 

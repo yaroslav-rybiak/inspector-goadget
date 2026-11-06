@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.3.0 - 2026-11-06
+
+Shaped by the first production use, the DEED e2e suite (IES intake and Case Management,
+both on `@abgov/web-components` 2.5.0 through the Angular wrappers).
+
+### Added
+
+- `timeout` on the locator: how long to wait for the component to appear and upgrade,
+  instead of `defaultCommandTimeout`. `getGoaFormItem` accepts it in its options.
+- `within` strings accept jQuery selector extensions (`:first`, `:contains()`) and are
+  re-evaluated on every retry, so they survive page re-renders.
+- `uploadGoaFileUploadInput(l, file, { waitFor })`: a selector or callback to wait on for
+  applications that render their own upload UI instead of a goa-file-upload-card.
+- The suite runs against `@abgov/web-components` 2.5.0 and 3.2.0 in CI. `removeGoaFilterChip`
+  and `dismissGoaNotification` now handle the 2.x markup as well.
+
+### Changed
+
+- `engines.node` relaxed to `>=20`.
+
 ## 2.2.0 - 2026-11-06
 
 ### Added
