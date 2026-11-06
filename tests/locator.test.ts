@@ -118,6 +118,21 @@ describe("locators", () => {
       getGoaDropdown({ name: "worker" }).should("have.value", "");
     });
 
+    it("uploaders accept waitFor as a selector or a callback", () => {
+      uploadGoaFileUploadInput({ within: '[data-cy="bare-uploader"]' }, "ExampleFile.jpg", {
+        waitFor: '[data-testid="upload-events"]:contains("bare ExampleFile.jpg")',
+      });
+      let waited = false;
+      uploadGoaFileUploadInput({ within: '[data-cy="bare-uploader"]' }, "ExampleFile.pdf", {
+        waitFor: () => {
+          cy.get('[data-testid="upload-events"]')
+            .should("have.text", "bare ExampleFile.pdf")
+            .then(() => (waited = true));
+        },
+      });
+      cy.then(() => expect(waited).to.eq(true));
+    });
+
     it("uploaders outside a form item work with within and waitForCard: false", () => {
       getGoaFileUploadInput({ within: '[data-cy="bare-uploader"]' }).should("have.length", 1);
       uploadGoaFileUploadInput({ within: '[data-cy="bare-uploader"]' }, "ExampleFile.png", { waitForCard: false });

@@ -35,20 +35,24 @@ function mimeType(fileName: string): string {
  * Uploads a file to a goa-file-upload-input by dropping it on the drag-and-drop area.
  *
  * Drops the fixture file on the uploader, then waits until the application has
- * rendered a goa-file-upload-card for that file whose progress bar is gone. Pass
- * `waitForCard: false` for applications that render no card.
+ * rendered a goa-file-upload-card for that file whose progress bar is gone.
+ * Applications that render their own upload UI instead of a card can pass `waitFor`:
+ * a selector that must exist afterwards, or a callback that performs the wait. Pass
+ * `waitForCard: false` to return right after the drop.
  *
  * @param {Locator} locator - Form-item label, or a locator object (`{}` for the only uploader).
  * @param {string} fileName - A file in the Cypress fixtures folder (jpg, jpeg, png or pdf).
- * @param {object} [options] - `waitForCard` (default true).
+ * @param {object} [options] - `waitFor`: selector or callback; `waitForCard` (default true).
  * @example
  * uploadGoaFileUploadInput("Upload a file", "ExampleFile.pdf");
- * uploadGoaFileUploadInput({ within: '[data-cy="documents"]' }, "leto/sin.jpg", { waitForCard: false });
+ * uploadGoaFileUploadInput({ within: '[data-cy="documents"]' }, "leto/sin.jpg", {
+ *   waitFor: '[data-cy="document-list"] li',
+ * });
  */
 export function uploadGoaFileUploadInput(
   locator: Locator,
   fileName: string,
-  options: { waitForCard?: boolean } = {}
+  options: { waitForCard?: boolean; waitFor?: string | (() => void) } = {}
 ): void {
   const fileType = mimeType(fileName);
   const baseName = fileName.split("/").pop() ?? fileName;
@@ -67,6 +71,14 @@ export function uploadGoaFileUploadInput(
         });
     });
 
+  if (typeof options.waitFor === "function") {
+    options.waitFor();
+    return;
+  }
+  if (typeof options.waitFor === "string") {
+    cy.get(options.waitFor).should("exist");
+    return;
+  }
   if (options.waitForCard === false) return;
   // The file name is always rendered, so its presence proves the card has rendered;
   // then wait for the progress bar, if any, to go away.
