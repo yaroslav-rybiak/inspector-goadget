@@ -14,8 +14,7 @@ line instead of chaining `.shadow().find(...)` by hand.
 
 Applications built on `@abgov/angular-components` or `@abgov/react-components` render the
 same `goa-*` elements inside their wrapper elements, so the helpers work there unchanged;
-a `data-cy` on the wrapper is a natural `within` scope. For `@abgov/web-components` 1.x
-use `inspector-goadget@1`.
+a `data-cy` on the wrapper is a natural `within` scope.
 
 ## Installation
 
@@ -23,7 +22,8 @@ use `inspector-goadget@1`.
 npm install --save-dev inspector-goadget
 ```
 
-Import the helpers you need in a spec or in your Cypress support file:
+Cypress is a peer dependency, so it has to be installed in your project already. Import
+the helpers you need in a spec or in your Cypress support file:
 
 ```ts
 import { clickGoaButton, fillGoaInput } from "inspector-goadget";
@@ -44,8 +44,9 @@ Every component has two kinds of helper:
 
 The first argument of every helper is a **locator**. A plain string means the component's
 natural key: the label of the surrounding `goa-form-item` for form controls, the visible
-text for buttons, chips and checkboxes, the heading for modals, drawers, tabs and
-accordions. For anything else pass an object; the fields combine.
+text for buttons, chips and checkboxes, the aria label or icon name for icon buttons, the
+heading for modals, drawers, tabs and accordions. For anything else pass an object; the
+fields combine.
 
 | Field      | Matches                                                                                    |
 | ---------- | ------------------------------------------------------------------------------------------ |
@@ -70,7 +71,7 @@ matches nothing afterwards, and the failure then reads as "found 0 elements".
 fillGoaInput("First name", "Ada");                                  // by form-item label
 fillGoaInput({ name: "firstName" }, "Ada");                         // by name attribute
 clickGoaButton({ within: '[data-cy="next"]' });                     // the only button in a wrapper
-clickGoaButton({ within: '[data-cy="start"]', timeout: 60000 });     // slow dashboard
+clickGoaButton({ within: '[data-cy="start"]', timeout: 60000 });    // slow dashboard
 selectGoaRadioGroup({ within: '[data-cy="onBehalf"]' }, { value: "yes" });
 selectGoaDropdown({ name: "worker" }, /^Jane Doe,/, { filter: "Jane" });
 getGoaModal("Confirm submission").within(() => clickGoaButton("Yes, submit"));
@@ -86,7 +87,7 @@ components; use the exported `goaOpen()` callback: `getGoaModal("Confirm").shoul
 
 | Component                 | Actions                                                                                      | Locator → yields                                    |
 | ------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| `goa-form-item`           |                                                                                              | `getGoaFormItem(label, { within? })` → host         |
+| `goa-form-item`           |                                                                                              | `getGoaFormItem(label, { within?, timeout? })` → host |
 | `goa-input`               | `fillGoaInput(l, text)`                                                                      | `getGoaInput(l)` → `input`                          |
 | `goa-textarea`            | `fillGoaTextarea(l, text)`                                                                   | `getGoaTextarea(l)` → `textarea`                    |
 | `goa-checkbox`            | `checkGoaCheckbox(l)`, `uncheckGoaCheckbox(l)`                                               | `getGoaCheckbox(l)` → `input`                       |
@@ -99,7 +100,7 @@ components; use the exported `goaOpen()` callback: `getGoaModal("Confirm").shoul
 | `goa-file-upload-input`   | `uploadGoaFileUploadInput(l, fileName, { waitFor?, waitForCard? })`                          | `getGoaFileUploadInput(l)` → host                   |
 | `goa-file-upload-card`    | `deleteGoaFileUploadCard(l, fileName)`                                                       | `getGoaFileUploadCard(l, fileName)` → host          |
 
-`l` is a locator. `texts` accept one string or an array. `date` accepts a `Date` or a
+`l` is a locator. `texts` accepts one string or an array. `date` accepts a `Date` or a
 `YYYY-MM-DD` string. `uploadGoaFileUploadInput` drops a file from the Cypress fixtures folder
 (jpg, jpeg, png or pdf) and waits for the matching upload card to finish. Applications that
 render their own upload UI pass `{ waitFor }` with a selector that must exist afterwards or
@@ -161,23 +162,14 @@ instance), so assert on the locator's element or listen for the event in your ap
 
 ### Coverage
 
-Covered: every form control, button, chip, overlay, notification, menu, tab, accordion,
-details, header, side menu and the form stepper listed above (35 components). Planned for
-2.3: table and sort headers, and assertion locators for callout, badge, tooltip and the
-progress indicators. Layout-only components (block, grid, container, card, divider, spacer,
-text, icon, skeleton, spinner, layouts, footer, hero banner) need no helpers. The
-experimental public-form components are out of scope.
+Covered: the 39 components in the tables above, which is every form control, button, chip,
+overlay, notification, menu, tab, accordion, details, header, side menu and the form
+stepper. Planned next: table and sort headers, and assertion locators for callout, badge,
+tooltip and the progress indicators. Layout-only components (block, grid, container, card,
+divider, spacer, text, icon, skeleton, spinner, layouts, footer, hero banner) need no
+helpers. The experimental public-form components are out of scope.
 
-## Migrating from 1.x
-
-| 1.x                                     | 2.x                                        |
-| --------------------------------------- | ------------------------------------------ |
-| `typeInGoaInput(label, text)`           | `fillGoaInput(label, text)`                |
-| `selectGoaDropdownOption(label, text)`  | `selectGoaDropdown(label, text)`           |
-| `uploadFileToGoaInput(label, fileName)` | `uploadGoaFileUploadInput(label, fileName)` |
-
-`clickGoaButton` keeps its name. Cypress is now a peer dependency, so make sure it is
-installed in your project. See [CHANGELOG.md](CHANGELOG.md) for the full list.
+See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
 
 ## Development
 
