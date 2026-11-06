@@ -25,3 +25,8 @@ export * from "./components/goa-push-drawer";
 export * from "./components/goa-popover";
 export * from "./components/goa-notification";
 export * from "./components/goa-temp-notification";
+export * from "./components/goa-menu-button";
+export * from "./components/goa-menu-action";
+export * from "./components/goa-tabs";
+export * from "./components/goa-accordion";
+export * from "./components/goa-details";
