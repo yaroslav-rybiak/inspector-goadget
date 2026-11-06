@@ -5,8 +5,12 @@
  * resolves to the host element and Cypress never delivers a normal click to the
  * control. Check what matters (visible, enabled) and then click with force.
  */
-export function clickShadowControl<T extends HTMLElement>(control: Cypress.Chainable<JQuery<T>>): void {
-  control.should("be.visible").and("not.be.disabled").click({ force: true });
+export function clickShadowControl<T extends HTMLElement>(
+  control: Cypress.Chainable<JQuery<T>>,
+  options: { visible?: boolean } = {}
+): void {
+  const ready = options.visible === false ? control.should("exist") : control.should("be.visible");
+  ready.and("not.be.disabled").click({ force: true });
 }
 
 /**

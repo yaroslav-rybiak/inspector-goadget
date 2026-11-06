@@ -22,6 +22,8 @@ export interface GoaLocator {
   name?: string;
   /** The component's `testid` attribute. */
   testid?: string;
+  /** The component's `icon` attribute (icon buttons, menu actions, side-menu groups). */
+  icon?: string;
   /** Extra CSS selector appended to the tag, for example `[data-cy="next"]`. */
   selector?: string;
   /**
@@ -64,6 +66,7 @@ function tagSelector(tag: string, locator: GoaLocator): string {
   let selector = tag;
   if (locator.name !== undefined) selector += `[name="${cssAttrValue(locator.name)}"]`;
   if (locator.testid !== undefined) selector += `[testid="${cssAttrValue(locator.testid)}"]`;
+  if (locator.icon !== undefined) selector += `[icon="${cssAttrValue(locator.icon)}"]`;
   if (locator.selector) selector += locator.selector;
   return selector;
 }
@@ -103,4 +106,12 @@ export function findGoaHosts(
     hosts = hosts.filter((_, el) => matchesText(textOf(el), text));
   }
   return hosts;
+}
+
+/** Text of an attribute, or of a named slot child, or of the whole light DOM. */
+export function attributeOrSlotText(el: Element, attribute: string, slot?: string): string {
+  const value = el.getAttribute(attribute);
+  if (value && value.trim()) return normalizeText(value);
+  const slotted = slot ? el.querySelector(`:scope > [slot="${slot}"]`) : null;
+  return normalizeText((slotted ?? el).textContent);
 }

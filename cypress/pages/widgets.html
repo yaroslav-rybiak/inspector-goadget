@@ -57,6 +57,14 @@
         </goa-drawer>
       </section>
 
+      <section id="sec-push-drawer">
+        <h2>goa-push-drawer</h2>
+        <goa-button id="open-push-drawer">Open push drawer</goa-button>
+        <goa-push-drawer id="push-drawer" heading="Details" data-record="push-drawer">
+          <p>Push drawer body</p>
+        </goa-push-drawer>
+      </section>
+
       <section id="sec-popover">
         <h2>goa-popover</h2>
         <goa-popover id="popover" data-record="popover">
@@ -73,7 +81,7 @@
 
       <section id="sec-menu">
         <h2>goa-menu-button</h2>
-        <goa-menu-button text="Assign next" data-record="menu">
+        <goa-menu-button text="Assign next" data-cy="assign-next" data-record="menu">
           <goa-menu-action text="Assign 1 file" action="assign-1"></goa-menu-action>
           <goa-menu-action text="Assign 5 files" action="assign-5"></goa-menu-action>
         </goa-menu-button>
@@ -97,13 +105,13 @@
       <section id="sec-header">
         <h2>goa-app-header</h2>
         <goa-app-header heading="Case Management" url="#home">
-          <goa-app-header-menu heading="Reports">
+          <goa-app-header-menu heading="Reports" slot="navigation">
             <a href="#monthly">Monthly report</a>
             <a href="#annual">Annual report</a>
           </goa-app-header-menu>
-          <a href="#cases">Cases</a>
-          <a href="#search">Search</a>
-          <goa-button type="primary" id="sign-in">Sign in</goa-button>
+          <a href="#cases" slot="navigation">Cases</a>
+          <a href="#search" slot="navigation">Search</a>
+          <goa-button type="primary" id="sign-in" slot="utilities">Sign in</goa-button>
         </goa-app-header>
       </section>
 
@@ -144,7 +152,8 @@
 
     <script type="module">
       const events = document.getElementById("events");
-      const log = (text) => { events.textContent = text; };
+      // Append, because some components (the stepper) fire _change on load.
+      const log = (text) => { events.textContent = events.textContent ? `${events.textContent} | ${text}` : text; };
       const names = ["_click","_change","_open","_close","_action","_dismiss","_toggle","_navigate","_remove","_delete"];
       for (const el of document.querySelectorAll("[data-record]")) {
         for (const name of names) {
@@ -164,6 +173,11 @@
       document.getElementById("drawer").addEventListener("_close", () => document.getElementById("drawer").setAttribute("open", "false"));
       document.getElementById("drawer-apply").addEventListener("_click", () => { log("drawer-apply:_click"); document.getElementById("drawer").setAttribute("open", "false"); });
       document.getElementById("sign-in").addEventListener("_click", () => log("sign-in:_click"));
+      document.getElementById("open-push-drawer").addEventListener("_click", () => document.getElementById("push-drawer").setAttribute("open", "true"));
+      document.getElementById("push-drawer").addEventListener("_close", () => document.getElementById("push-drawer").setAttribute("open", "false"));
+      for (const a of document.querySelectorAll("a[href^='#']")) {
+        a.addEventListener("click", (e) => { e.preventDefault(); log(`link:${a.getAttribute("href")}`); });
+      }
     </script>
   </body>
 </html>

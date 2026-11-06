@@ -1,4 +1,5 @@
 export type { GoaLocator, Locator, Scope, TextMatch } from "./internal/locate";
+export { goaOpen, isGoaOpen, domAttr } from "./internal/attributes";
 export * from "./components/goa-form-item";
 export * from "./components/goa-button";
 export * from "./components/goa-input";
@@ -12,3 +13,9 @@ export * from "./components/goa-calendar";
 export * from "./components/goa-date-picker";
 export * from "./components/goa-file-upload-input";
 export * from "./components/goa-file-upload-card";
+export * from "./components/goa-icon-button";
+export * from "./components/goa-link-button";
+export * from "./components/goa-link";
+export * from "./components/goa-chip";
+export * from "./components/goa-filter-chip";
+export * from "./components/goa-pagination";

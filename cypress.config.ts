@@ -8,7 +8,10 @@ export default defineConfig({
     // @abgov/web-components straight out of node_modules.
     fileServerFolder: ".",
     defaultCommandTimeout: 10000,
-    supportFile: false,
+    supportFile: "tests/support.ts",
+    // Desktop layout: goa-app-header collapses its navigation into a menu button on narrow viewports.
+    viewportWidth: 1280,
+    viewportHeight: 800,
     video: false,
   },
 });
