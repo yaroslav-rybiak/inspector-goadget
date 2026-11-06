@@ -1,10 +1,12 @@
-# Publishes the package to npmjs.com through npm trusted publishing (OIDC).
+# Stages the package on npmjs.com through npm trusted publishing (OIDC).
 #
-# Runs when a version tag is pushed (v2.3.0) or on demand with a tag name. Publishing
+# Runs when a version tag is pushed (v2.3.0) or on demand with a tag name. Staging
 # needs no npm token: npmjs.com trusts this repository's workflow after a one-time
 # "Trusted Publisher" entry in the package settings (owner yaroslav-rybiak, repository
-# inspector-goadget, workflow release.yml). npm adds a signed provenance statement to
-# every version published this way.
+# inspector-goadget, workflow release.yml). The staged version becomes public only
+# after a maintainer approves it on npmjs.com or with `npm stage approve`, which
+# needs interactive two-factor authentication and therefore cannot happen in CI. npm
+# adds a signed provenance statement to every version staged this way.
 name: Release
 
 on:
@@ -40,7 +42,7 @@ jobs:
         env:
           WC: ${{ matrix.web-components }}
 
-  publish:
+  stage:
     needs: test
     runs-on: ubuntu-latest
     permissions:
@@ -52,9 +54,9 @@ jobs:
           ref: ${{ inputs.tag || github.ref }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
-      - name: Use an npm that supports trusted publishing
+      - name: Use an npm that supports staged trusted publishing
         run: npm install -g npm@latest && npm --version
       - run: npm ci
         env:
@@ -79,4 +81,4 @@ jobs:
             for (const key of ["repository", "repository_owner", "workflow_ref", "job_workflow_ref", "environment", "ref", "event_name"]) {
               core.info(`${key}: ${claims[key] ?? "(not set)"}`);
             }
-      - run: npm publish
+      - run: npm stage publish
