@@ -1,5 +1,33 @@
 # Changelog
 
+## 2.2.0 - 2026-11-06
+
+### Added
+
+- **Locators.** Every helper takes a locator: a string (the component's natural key) or
+  an object combining `label`, `text`, `name`, `testid`, `icon`, `selector` and `within`.
+  `within` takes a CSS selector, element or jQuery collection and matches the container
+  itself when it is the component. `label` and `text` accept a `RegExp`.
+- `selectGoaRadioGroup(group, { value })` picks a radio item by value.
+- `selectGoaDropdown(l, option, { filter })` clears and types into filterable dropdowns
+  before picking; options accept a `RegExp`. `clearGoaDropdown` added.
+- `uploadGoaFileUploadInput` works outside a form item (`{}` or `{ within }`) and takes
+  `{ waitForCard: false }`.
+- `goaOpen()`, `isGoaOpen()`, `domAttr()`: read GoA's `open` attribute, which jQuery and
+  Cypress's `have.attr` cannot.
+- New components: goa-icon-button, goa-link-button, goa-link, goa-chip, goa-filter-chip,
+  goa-pagination, goa-modal, goa-drawer, goa-push-drawer, goa-popover, goa-notification,
+  goa-temp-notification, goa-menu-button, goa-menu-action, goa-tabs / goa-tab,
+  goa-accordion, goa-details, goa-app-header, goa-app-header-menu, goa-side-menu /
+  goa-side-menu-group, goa-work-side-menu / item / group, goa-form-stepper / goa-form-step.
+
+### Changed
+
+- `getGoaButton("Submit")` and other text-keyed locators now match the text exactly
+  (whitespace collapsed) instead of as a substring. Use `{ text: /Submit/ }` for a
+  partial match.
+- `selectGoaCalendar(date, locator?)` takes an optional locator.
+
 ## 2.1.0 - 2026-11-06
 
 ### Added
