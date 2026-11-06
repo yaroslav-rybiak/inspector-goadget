@@ -1,16 +1,21 @@
 import { uploadFileToGoaInput } from "../src/components/goa-file-upload";
+import { visitFixturePage } from "./fixture-page";
 
-describe("Upload a file to goa-file-upload-input", () => {
-  const testCases = [
-    { label: "Upload a file", fileName: "ExampleFile.pdf" },
-    { label: "Upload a file", fileName: "ExampleFile.jpg" },
-    { label: "Upload a file", fileName: "ExampleFile.jpeg" },
-    { label: "Upload a file", fileName: "ExampleFile.png" },
+describe("uploadFileToGoaInput", () => {
+  const label = "Upload a file";
+  const fileNames = [
+    "ExampleFile.pdf",
+    "ExampleFile.jpg",
+    "ExampleFile.jpeg",
+    "ExampleFile.png",
   ];
 
-  testCases.forEach(({ label, fileName }) => {
-    it(`Uploads an ${fileName} file using the "${label}" label`, () => {
-      cy.visit("https://design.alberta.ca/components/file-uploader#tab-0");
+  beforeEach(() => {
+    visitFixturePage();
+  });
+
+  fileNames.forEach((fileName) => {
+    it(`uploads ${fileName} through the input labelled '${label}'`, () => {
       uploadFileToGoaInput(label, fileName);
       cy.get(`goa-form-item[label="${label}"]`)
         .find("goa-file-upload-card")

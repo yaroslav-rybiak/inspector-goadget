@@ -1,12 +1,18 @@
 import { clickGoaButton } from "../src/components/goa-button";
+import { visitFixturePage } from "./fixture-page";
 
-describe("Click a goa-button", () => {
-  it("Finds the 'Primary Button' goa-button and clicks its inner button", () => {
-    cy.visit("https://design.alberta.ca/components/button#tab-0");
-    clickGoaButton("Primary Button");
+describe("clickGoaButton", () => {
+  beforeEach(() => {
+    visitFixturePage();
   });
-  it("Finds the 'Submit and continue' goa-button and clicks its inner button", () => {
-    cy.visit("https://design.alberta.ca/components/button#tab-0");
+
+  it("clicks the 'Primary Button' goa-button", () => {
+    clickGoaButton("Primary Button");
+    cy.get('[data-testid="last-clicked"]').should("have.text", "Primary Button");
+  });
+
+  it("clicks the 'Submit and continue' goa-button", () => {
     clickGoaButton("Submit and continue");
+    cy.get('[data-testid="last-clicked"]').should("have.text", "Submit and continue");
   });
 });

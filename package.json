@@ -33,15 +33,17 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.tests.json --noEmit",
-    "test": "cypress run",
-    "test:open": "cypress open",
+    "test": "node scripts/cypress.mjs run --browser chrome",
+    "test:open": "node scripts/cypress.mjs open --e2e --browser chrome",
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
     "cypress": ">=13"
   },
   "devDependencies": {
+    "@abgov/web-components": "3.2.0",
     "cypress": "^16.2.1",
+    "ionicons": "8.1.0",
     "typescript": "^7.0.2"
   }
 }
