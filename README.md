@@ -194,6 +194,13 @@ npm run test:open
 The npm scripts go through `scripts/cypress.mjs`, which strips `ELECTRON_RUN_AS_NODE`
 so Cypress also starts from a VS Code terminal.
 
+### Releasing
+
+Bump the version in `package.json`, add the CHANGELOG entry, commit, tag `vX.Y.Z` and push
+with `--follow-tags`. The `Release` workflow runs the suite against both web-components
+versions and publishes to npmjs.com through trusted publishing, with provenance. An
+existing tag can be published from the Actions tab with "Run workflow".
+
 ## Contributing
 
 Contributions are welcome. Open an issue or a pull request at
