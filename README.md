@@ -32,7 +32,7 @@ import { clickGoaButton, fillGoaInput } from "inspector-goadget";
 ## Helpers
 
 Helper names follow one scheme: verb + `Goa` + the component's tag name in PascalCase.
-Every component has two kinds of helper:
+Most components have two kinds of helper:
 
 - an **action** (`fillGoaInput`, `checkGoaCheckbox`, `selectGoaMenuButton`, ...) that drives it;
 - a **locator** (`getGoaInput`, `getGoaCheckbox`, ...) that returns a Cypress chainable for
@@ -45,7 +45,8 @@ Every component has two kinds of helper:
 The first argument of every helper is a **locator**. A plain string means the component's
 natural key: the label of the surrounding `goa-form-item` for form controls, the visible
 text for buttons, chips and checkboxes, the aria label or icon name for icon buttons, the
-heading for modals, drawers, tabs and accordions. A string starting with `@` means "the
+heading for modals, drawers, tabs, accordions, callouts and the notification panel, the
+message for notifications, the content for tooltips and badges. A string starting with `@` means "the
 component inside the element whose test attribute has that value": `"@next"` is short for
 `{ within: '[data-cy="next"]' }`. The attribute defaults to `data-cy`; change it once in
 your support file with `configureGoa({ testAttribute: "data-testid" })`. For anything else
@@ -161,10 +162,12 @@ uploadGoaFileUploadInput("@documents", "sin.jpg", {
 | `goa-push-drawer`       | `closeGoaPushDrawer(l)`                           | `getGoaPushDrawer(l)` → host              |
 | `goa-popover`           | `openGoaPopover(l?)`, `closeGoaPopover(l?)`       | `getGoaPopover(l?)` → host                |
 | `goa-notification`      | `dismissGoaNotification(l?)`                      | `getGoaNotification(l?)` → host           |
-| `goa-temp-notification` |                                                   | `getGoaTempNotification(l?)` → host       |
+| `goa-temp-notification` | `clickGoaTempNotification(l?)` (the action button) | `getGoaTempNotification(l?)` → host      |
 
 Modal, drawer and popover content is light DOM, so `getGoaModal("Confirm").within(...)`
-reaches the buttons inside. Assert open state with `goaOpen()`.
+reaches the buttons inside. Assert open state with `goaOpen()`. Temporary notifications
+shown through `TemporaryNotification.show()` live inside the controller's shadow DOM; the
+locator finds them there by message.
 
 ### Menus, tabs, disclosure
 
@@ -190,6 +193,37 @@ reaches the buttons inside. Assert open state with `goaOpen()`.
 | `goa-form-stepper`         |                                                                                 | `getGoaFormStepper(l?)` → host                |
 | `goa-form-step`            | `selectGoaFormStep(l)`                                                          | `getGoaFormStep(l)` → host                    |
 
+### Data and display
+
+| Component                            | Actions                                                                                              | Locator → yields                                                   |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `goa-table`                          | `sortGoaTable(header)`                                                                               | `getGoaTable(l?)` → host, `getGoaTableRow(text, l?)` → `tr`, `getGoaTableCell(rowText, columnHeading, l?)` → `td` |
+| `goa-table-sort-header`              |                                                                                                      | `getGoaTableSortHeader(l)` → host (`direction` attribute)          |
+| `goa-data-grid`                      |                                                                                                      | `getGoaDataGrid(l?)` → host                                        |
+| `goa-work-side-notification-panel`   | `selectGoaWorkSideNotificationPanel(l, tab)`, `viewAllGoaWorkSideNotificationPanel(l)`, `markAllReadGoaWorkSideNotificationPanel(l)`, `closeGoaWorkSideNotificationPanel(l)` | `getGoaWorkSideNotificationPanel(l?)` → host |
+| `goa-work-side-notification-item`    | `clickGoaWorkSideNotificationItem(l)`                                                                | `getGoaWorkSideNotificationItem(l)` → host                         |
+| `goa-microsite-header`               | `clickGoaMicrositeHeader(l?)` (the feedback link)                                                    | `getGoaMicrositeHeader(l?)` → host                                 |
+| `goa-tooltip`                        | `showGoaTooltip(l)`, `hideGoaTooltip(l)`                                                             | `getGoaTooltip(l)` → `[role="tooltip"]`                            |
+| `goa-callout`                        |                                                                                                      | `getGoaCallout(l?)` → host                                         |
+| `goa-badge`                          |                                                                                                      | `getGoaBadge(l?)` → host                                           |
+| `goa-linear-progress`                |                                                                                                      | `getGoaLinearProgress(l?)` → `[role="progressbar"]`                |
+| `goa-circular-progress`              |                                                                                                      | `getGoaCircularProgress(l?)` → host                                |
+
+A table's rows and cells are light DOM, so `getGoaTableRow("1002")` yields a plain `tr` and
+`getGoaButton({ text: "View", within: $row })` reaches a button inside it. `getGoaTableRow`
+matches a string against a whole cell and a RegExp against each cell. For the grid, scope
+with `{ within: "goa-data-grid" }`.
+
+```ts
+sortGoaTable("Name");
+getGoaTableSortHeader("Name").should("have.attr", "direction", "asc");
+getGoaTableCell("1002", "Status").should("have.text", "Closed");
+selectGoaWorkSideNotificationPanel("Notifications", "Urgent");
+clickGoaWorkSideNotificationItem("Case 1001 reassigned");
+showGoaTooltip("Helpful tip");
+getGoaTooltip("Helpful tip").should("be.visible");
+```
+
 Components report changes through `_change`, `_click`, `_close` and similar events on the
 host element. The host's `value` property is not always updated (goa-dropdown, for
 instance), so assert on the locator's element or listen for the event in your application.
@@ -197,8 +231,9 @@ instance), so assert on the locator's element or listen for the event in your ap
 ### Coverage
 
 Every element `@abgov/web-components` 3.2.0 defines, and where this library stands on it
-(43 covered, 30 not needed, 13 planned, 10 out of scope). "Not needed" means a layout or display component whose content is ordinary
-light DOM, reachable with plain Cypress commands.
+(56 covered, 30 not needed, 10 out of scope). "Not needed" means a layout or structural component whose
+content is ordinary light DOM, reachable with plain Cypress commands. Every interactive
+component listed on design.alberta.ca has a helper.
 
 | Component | Status | Helpers or note |
 | --- | --- | --- |
@@ -209,12 +244,12 @@ light DOM, reachable with plain Cypress commands.
 | `goa-app-header` | covered | clickGoaAppHeader, getGoaAppHeader |
 | `goa-app-header-menu` | covered | openGoaAppHeaderMenu, selectGoaAppHeaderMenu, getGoaAppHeaderMenu |
 | `goa-app-header-navigation` | not needed | layout or display only; use plain Cypress |
-| `goa-badge` | planned | 2.5.0 (assertion locator) |
+| `goa-badge` | covered | getGoaBadge |
 | `goa-block` | not needed | layout or display only; use plain Cypress |
 | `goa-button` | covered | clickGoaButton, getGoaButton |
 | `goa-button-group` | not needed | layout or display only; use plain Cypress |
 | `goa-calendar` | covered | selectGoaCalendar, getGoaCalendar |
-| `goa-callout` | planned | 2.5.0 (assertion locator) |
+| `goa-callout` | covered | getGoaCallout |
 | `goa-card` | not needed | layout or display only; use plain Cypress |
 | `goa-card-actions` | not needed | layout or display only; use plain Cypress |
 | `goa-card-content` | not needed | layout or display only; use plain Cypress |
@@ -223,9 +258,9 @@ light DOM, reachable with plain Cypress commands.
 | `goa-checkbox` | covered | checkGoaCheckbox, uncheckGoaCheckbox, getGoaCheckbox |
 | `goa-checkbox-list` | covered | checkGoaCheckboxList, uncheckGoaCheckboxList, getGoaCheckboxList |
 | `goa-chip` | covered | clickGoaChip, getGoaChip |
-| `goa-circular-progress` | planned | 2.5.0 (assertion locator) |
+| `goa-circular-progress` | covered | getGoaCircularProgress |
 | `goa-container` | not needed | layout or display only; use plain Cypress |
-| `goa-data-grid` | planned | 2.5.0 (with goa-table) |
+| `goa-data-grid` | covered | getGoaDataGrid |
 | `goa-date-picker` | covered | selectGoaDatePicker, getGoaDatePicker |
 | `goa-details` | covered | openGoaDetails, closeGoaDetails, getGoaDetails |
 | `goa-divider` | not needed | layout or display only; use plain Cypress |
@@ -237,7 +272,7 @@ light DOM, reachable with plain Cypress commands.
 | `goa-file-upload-card` | covered | deleteGoaFileUploadCard, getGoaFileUploadCard |
 | `goa-file-upload-input` | covered | uploadGoaFileUploadInput, getGoaFileUploadInput |
 | `goa-filter-chip` | covered | removeGoaFilterChip, getGoaFilterChip |
-| `goa-focus-trap` | planned | internal to modal/drawer |
+| `goa-focus-trap` | not needed | layout or display only; use plain Cypress |
 | `goa-form-item` | covered | getGoaFormItem |
 | `goa-form-step` | covered | selectGoaFormStep, getGoaFormStep |
 | `goa-form-stepper` | covered | getGoaFormStepper |
@@ -247,12 +282,12 @@ light DOM, reachable with plain Cypress commands.
 | `goa-icon-button` | covered | clickGoaIconButton, getGoaIconButton |
 | `goa-input` | covered | fillGoaInput, getGoaInput |
 | `goa-layout-full-nav` | not needed | layout or display only; use plain Cypress |
-| `goa-linear-progress` | planned | 2.5.0 (assertion locator) |
+| `goa-linear-progress` | covered | getGoaLinearProgress |
 | `goa-link` | covered | clickGoaLink, getGoaLink |
 | `goa-link-button` | covered | clickGoaLinkButton, getGoaLinkButton |
 | `goa-menu-action` | covered | clickGoaMenuAction, getGoaMenuAction |
 | `goa-menu-button` | covered | openGoaMenuButton, selectGoaMenuButton, getGoaMenuButton |
-| `goa-microsite-header` | planned | later |
+| `goa-microsite-header` | covered | clickGoaMicrositeHeader, getGoaMicrositeHeader |
 | `goa-modal` | covered | closeGoaModal, getGoaModal |
 | `goa-notification` | covered | dismissGoaNotification, getGoaNotification |
 | `goa-one-column-layout` | not needed | layout or display only; use plain Cypress |
@@ -268,7 +303,7 @@ light DOM, reachable with plain Cypress commands.
 | `goa-public-subform` | out of scope | experimental public-form system |
 | `goa-public-subform-index` | out of scope | experimental public-form system |
 | `goa-push-drawer` | covered | closeGoaPushDrawer, getGoaPushDrawer |
-| `goa-push-drawer-internal` | not needed | layout or display only; use plain Cypress |
+| `goa-push-drawer-internal` | covered | internal part of goa-push-drawer |
 | `goa-radio-group` | covered | selectGoaRadioGroup, getGoaRadioGroup |
 | `goa-radio-item` | covered | getGoaRadioItem (through its group) |
 | `goa-scroll-panel` | not needed | layout or display only; use plain Cypress |
@@ -280,24 +315,28 @@ light DOM, reachable with plain Cypress commands.
 | `goa-spacer` | not needed | layout or display only; use plain Cypress |
 | `goa-spinner` | not needed | layout or display only; use plain Cypress |
 | `goa-tab` | covered | getGoaTab |
-| `goa-table` | planned | 2.5.0 |
-| `goa-table-sort-header` | planned | 2.5.0 |
+| `goa-table` | covered | sortGoaTable, getGoaTable, getGoaTableRow, getGoaTableCell |
+| `goa-table-sort-header` | covered | getGoaTableSortHeader (clicked by sortGoaTable) |
 | `goa-tabs` | covered | selectGoaTab, getGoaTabs |
-| `goa-temp-notification` | covered | getGoaTempNotification |
-| `goa-temp-notification-ctrl` | planned | later |
+| `goa-temp-notification` | covered | clickGoaTempNotification, getGoaTempNotification |
+| `goa-temp-notification-ctrl` | covered | its notifications are found by getGoaTempNotification |
 | `goa-text` | not needed | layout or display only; use plain Cypress |
 | `goa-textarea` | covered | fillGoaTextarea, getGoaTextarea |
 | `goa-three-column-layout` | not needed | layout or display only; use plain Cypress |
-| `goa-tooltip` | planned | 2.5.0 (assertion locator) |
+| `goa-tooltip` | covered | showGoaTooltip, hideGoaTooltip, getGoaTooltip |
 | `goa-two-column-layout` | not needed | layout or display only; use plain Cypress |
 | `goa-work-side-menu` | covered | openGoaWorkSideMenu, closeGoaWorkSideMenu, getGoaWorkSideMenu |
 | `goa-work-side-menu-group` | covered | openGoaWorkSideMenuGroup, closeGoaWorkSideMenuGroup, getGoaWorkSideMenuGroup |
 | `goa-work-side-menu-item` | covered | clickGoaWorkSideMenuItem, getGoaWorkSideMenuItem |
-| `goa-work-side-notification-item` | planned | later |
-| `goa-work-side-notification-panel` | planned | later |
+| `goa-work-side-notification-item` | covered | clickGoaWorkSideNotificationItem, getGoaWorkSideNotificationItem |
+| `goa-work-side-notification-panel` | covered | selectGoaWorkSideNotificationPanel, viewAllGoaWorkSideNotificationPanel, markAllReadGoaWorkSideNotificationPanel, closeGoaWorkSideNotificationPanel, getGoaWorkSideNotificationPanel |
 | `goa-workspace-layout` | not needed | layout or display only; use plain Cypress |
 | `goax-form-step` | out of scope | experimental public-form system |
 | `goax-form-stepper` | out of scope | experimental public-form system |
+
+One quirk worth knowing with web-components 2.x: a `goa-table` that is upgraded before it
+has any children renders no slot, so rows added afterwards never appear. Frameworks attach
+children before inserting the element, so this only shows up in hand-written pages.
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
 

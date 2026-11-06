@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.5.0 - 2026-11-06
+
+Completes coverage of the interactive components on design.alberta.ca.
+
+### Added
+
+- `goa-table`: `sortGoaTable`, `getGoaTable`, `getGoaTableRow`, `getGoaTableCell`,
+  `getGoaTableSortHeader`; `getGoaDataGrid`.
+- Notification panel: `getGoaWorkSideNotificationPanel`, `selectGoaWorkSideNotificationPanel`,
+  `viewAllGoaWorkSideNotificationPanel`, `markAllReadGoaWorkSideNotificationPanel`,
+  `closeGoaWorkSideNotificationPanel`, `getGoaWorkSideNotificationItem`,
+  `clickGoaWorkSideNotificationItem`.
+- `goa-microsite-header`: `getGoaMicrositeHeader`, `clickGoaMicrositeHeader`.
+- `goa-temp-notification`: `clickGoaTempNotification` (the action button).
+- `goa-tooltip`: `getGoaTooltip`, `showGoaTooltip`, `hideGoaTooltip`.
+- Assertion locators `getGoaCallout`, `getGoaBadge`, `getGoaLinearProgress`,
+  `getGoaCircularProgress`.
+
+### Fixed
+
+- `getGoaTempNotification` now finds notifications shown through
+  `TemporaryNotification.show()`, which the controller renders inside its own shadow DOM
+  with the message set as a property rather than an attribute.
+
 ## 2.4.0 - 2026-11-06
 
 Shaped by the second round of feedback from the DEED e2e suite.
