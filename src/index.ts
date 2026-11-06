@@ -38,3 +38,4 @@ export * from "./components/goa-side-menu";
 export * from "./components/goa-work-side-menu";
 export * from "./components/goa-form-stepper";
 export * from "./components/goa-table";
+export * from "./components/goa-work-side-notification-panel";
