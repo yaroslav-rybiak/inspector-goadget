@@ -48,6 +48,29 @@ describe("locators", () => {
     });
   });
 
+  describe("timeout", () => {
+    let defaultTimeout: number;
+    beforeEach(() => {
+      defaultTimeout = Cypress.config("defaultCommandTimeout");
+      visitFixturePage("buttons");
+      Cypress.config("defaultCommandTimeout", 500);
+    });
+    afterEach(() => {
+      Cypress.config("defaultCommandTimeout", defaultTimeout);
+    });
+
+    it("waits for a component that appears later than defaultCommandTimeout", () => {
+      clickGoaButton({ within: '[data-cy="late"]', timeout: 5000 });
+      cy.get('[data-testid="last-clicked"]').should("have.text", "Late button");
+    });
+
+    it("applies to the label path and to getGoaFormItem", () => {
+      getGoaFormItem("Late input", { timeout: 5000 }).should("have.length", 1);
+      fillGoaInput({ label: "Late input", timeout: 5000 }, "late");
+      getGoaInput({ name: "late" }).should("have.value", "late");
+    });
+  });
+
   describe("on the forms page", () => {
     beforeEach(() => {
       visitFixturePage("forms");

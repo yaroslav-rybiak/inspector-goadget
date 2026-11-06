@@ -27,6 +27,11 @@ export interface GoaLocator {
   /** Extra CSS selector appended to the tag, for example `[data-cy="next"]`. */
   selector?: string;
   /**
+   * How long to wait for the component to appear, in milliseconds, instead of
+   * `defaultCommandTimeout`. Applies to finding and upgrading the host element.
+   */
+  timeout?: number;
+  /**
    * Only match components inside this container, or the container itself when it is
    * the component (so `data-cy` can sit on a wrapper or on the host). A CSS selector,
    * an element, or a jQuery collection. `cy.within()` also scopes every helper.
@@ -88,22 +93,38 @@ export function findGoaHosts(
   const loc = toLocator(locator, key);
   const selector = tagSelector(tag, loc);
   const within = loc.within;
+  // A retried assertion takes its timeout from the last query before it, so every
+  // query in the chain gets the requested timeout.
+  const opts = loc.timeout === undefined ? {} : { timeout: loc.timeout };
   const scoped = (chain: Chainable): Chainable =>
-    within === undefined ? chain : chain.filter((_, el) => isWithin(el, within));
+    within === undefined ? chain : chain.filter((_, el) => isWithin(el, within), opts);
 
   let hosts: Chainable;
   if (loc.label !== undefined) {
     const label = loc.label;
-    const formItems = scoped(cy.get("goa-form-item")).filter((_, el) => matchesText(goaFormItemLabel(el), label));
-    if (tag !== "goa-form-item") hosts = formItems.find(selector);
-    else hosts = selector === tag ? formItems : formItems.filter(selector);
+    const formItems = scoped(cy.get("goa-form-item", opts)).filter(
+      (_, el) => matchesText(goaFormItemLabel(el), label),
+      opts
+    );
+    if (tag !== "goa-form-item") hosts = formItems.find(selector, opts);
+    else hosts = selector === tag ? formItems : formItems.filter(selector, opts);
   } else {
-    hosts = scoped(cy.get(selector));
+    hosts = scoped(cy.get(selector, opts));
   }
 
   if (loc.text !== undefined) {
     const text = loc.text;
-    hosts = hosts.filter((_, el) => matchesText(textOf(el), text));
+    hosts = hosts.filter((_, el) => matchesText(textOf(el), text), opts);
+  }
+
+  if (loc.timeout !== undefined) {
+    // Wait, within the requested time, for the host to exist and to be upgraded to its
+    // custom element (its shadow DOM is only there after the upgrade). Helpers then
+    // continue into the shadow DOM under the default timeout.
+    hosts = hosts.should(($hosts) => {
+      expect($hosts.length, `${selector} found`).to.be.greaterThan(0);
+      expect($hosts.toArray().every((el) => el.matches(":defined")), `${selector} upgraded`).to.eq(true);
+    });
   }
   return hosts;
 }

@@ -9,14 +9,15 @@ export { goaFormItemLabel } from "../internal/form-item-label";
  * matches exactly after collapsing whitespace; a RegExp is tested against the label.
  *
  * @param {string | RegExp} label - The visible label of the form item.
- * @param {object} [options] - `within`: only search inside this container.
+ * @param {object} [options] - `within`: only search inside this container; `timeout`: how
+ * long to wait for it, instead of defaultCommandTimeout.
  * @example
  * getGoaFormItem("First name").should("have.attr", "error", "");
  * getGoaFormItem(/^City/, { within: '[data-cy="address"]' });
  */
 export function getGoaFormItem(
   label: TextMatch,
-  options: { within?: Scope } = {}
+  options: { within?: Scope; timeout?: number } = {}
 ): Cypress.Chainable<JQuery<HTMLElement>> {
-  return findGoaHosts("goa-form-item", { label, within: options.within }, "label");
+  return findGoaHosts("goa-form-item", { label, ...options }, "label");
 }

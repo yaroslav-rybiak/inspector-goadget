@@ -36,6 +36,8 @@
         <goa-button type="secondary">Submit and continue</goa-button>
         <span data-cy="next"><goa-button type="tertiary" testid="next-btn">Next</goa-button></span>
         <span data-cy="confirm"><goa-button type="primary">Yes, submit application</goa-button></span>
+        <span data-cy="late"></span>
+        <div data-cy="late-form"></div>
         <p>Last clicked: <output id="last-clicked" data-testid="last-clicked"></output></p>
       </section>
 
@@ -44,11 +46,22 @@
     <script type="module">
       // goa-button: record which button fired `_click` so specs can assert on it.
       const lastClicked = document.getElementById("last-clicked");
-      for (const button of document.querySelectorAll("goa-button")) {
+      const record = (button) =>
         button.addEventListener("_click", () => {
           lastClicked.textContent = button.textContent.trim();
         });
-      }
+      document.querySelectorAll("goa-button").forEach(record);
+
+      // Late content, like a dashboard that renders after its data arrives: used by the
+      // `timeout` locator tests.
+      setTimeout(() => {
+        const late = document.createElement("goa-button");
+        late.textContent = "Late button";
+        record(late);
+        document.querySelector('[data-cy="late"]').append(late);
+        document.querySelector('[data-cy="late-form"]').innerHTML =
+          '<goa-form-item label="Late input"><goa-input name="late"></goa-input></goa-form-item>';
+      }, 1500);
     </script>
   </body>
 </html>
