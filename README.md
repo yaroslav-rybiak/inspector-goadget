@@ -8,8 +8,8 @@ line instead of chaining `.shadow().find(...)` by hand.
 
 | | |
 | ------------------------- | ---------------------------------------------------------------------- |
-| `@abgov/web-components`   | Works with 2.x and 3.x; the suite runs against 2.5.0 and 3.2.0 in CI. Not a dependency: your application ships it. |
-| `cypress`                 | 13 or newer, the package's only dependency (peer); developed and tested on 16. |
+| `@abgov/web-components`   | Works with 2.x and 3.x; the suite runs against 2.5.0 and 3.2.0 in CI. |
+| `cypress`                 | 13 or newer, developed and tested on 16. |
 
 Applications built on `@abgov/angular-components` or `@abgov/react-components` render the
 same `goa-*` elements inside their wrapper elements, so the helpers work there unchanged;
@@ -89,7 +89,7 @@ and `getGoaButton("Continue").first()` both work. Note that `within: ".list :fir
 the first container, not to the first matching component; use `.first()` on the locator for
 that. Every locator also writes its component and locator to the Cypress command log.
 
-Two Cypress limits to know. Cypress cannot traverse into the shadow DOM of an empty
+Cypress cannot traverse into the shadow DOM of an empty
 match, so assert absence on the host (`cy.get("goa-button").filter(...).should("not.exist")`)
 rather than through a locator. And jQuery treats `open` as a boolean attribute and returns
 its name instead of its value, so `have.attr("open", "true")` never passes on GoA
@@ -333,7 +333,7 @@ component listed on design.alberta.ca has a helper.
 | `goax-form-step` | out of scope | experimental public-form system |
 | `goax-form-stepper` | out of scope | experimental public-form system |
 
-One quirk worth knowing with web-components 2.x: a `goa-table` that is upgraded before it
+Note: a `goa-table` that is upgraded before it
 has any children renders no slot, so rows added afterwards never appear. Frameworks attach
 children before inserting the element, so this only shows up in hand-written pages.
 
