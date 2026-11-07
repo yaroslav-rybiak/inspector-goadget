@@ -26,7 +26,7 @@ Completes coverage of the interactive components on design.alberta.ca.
 
 ## 2.4.0
 
-Shaped by the second round of feedback from the DEED e2e suite.
+Shaped by the second round of feedback from IES intake and Case Management teams.
 
 ### Added
 
@@ -51,7 +51,7 @@ Shaped by the second round of feedback from the DEED e2e suite.
 
 ## 2.3.0
 
-Shaped by the first production use, the DEED e2e suite (IES intake and Case Management,
+Shaped by the first production use, (IES intake and Case Management,
 both on `@abgov/web-components` 2.5.0 through the Angular wrappers).
 
 ### Added
