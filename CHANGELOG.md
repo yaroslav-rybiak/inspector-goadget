@@ -24,7 +24,7 @@ Completes coverage of the interactive components on design.alberta.ca.
   `TemporaryNotification.show()`, which the controller renders inside its own shadow DOM
   with the message set as a property rather than an attribute.
 
-## 2.4.0 - 2026-11-06
+## 2.4.0
 
 Shaped by the second round of feedback from the DEED e2e suite.
 
@@ -49,7 +49,7 @@ Shaped by the second round of feedback from the DEED e2e suite.
 - `selectGoaDropdown` with `{ filter }` types over the current text instead of using the
   clear icon, so it no longer fires an intermediate `_change` with an empty value.
 
-## 2.3.0 - 2026-11-06
+## 2.3.0
 
 Shaped by the first production use, the DEED e2e suite (IES intake and Case Management,
 both on `@abgov/web-components` 2.5.0 through the Angular wrappers).
@@ -69,7 +69,7 @@ both on `@abgov/web-components` 2.5.0 through the Angular wrappers).
 
 - `engines.node` relaxed to `>=20`.
 
-## 2.2.0 - 2026-11-06
+## 2.2.0
 
 ### Added
 
@@ -97,7 +97,7 @@ both on `@abgov/web-components` 2.5.0 through the Angular wrappers).
   partial match.
 - `selectGoaCalendar(date, locator?)` takes an optional locator.
 
-## 2.1.0 - 2026-11-06
+## 2.1.0
 
 ### Added
 
@@ -120,7 +120,7 @@ both on `@abgov/web-components` 2.5.0 through the Angular wrappers).
   well as the `label` attribute (web-components 3.x supports both). Matching is exact
   after collapsing whitespace.
 
-## 2.0.0 - 2026-11-06
+## 2.0.0
 
 Targets Alberta Design System `@abgov/web-components` 3.x. Tested against 3.2.0.
 
