@@ -339,25 +339,10 @@ children before inserting the element, so this only shows up in hand-written pag
 
 See [CHANGELOG.md](CHANGELOG.md) for what changed in each version.
 
-## Development
-
-The specs in `tests/` run against local fixture pages under `cypress/pages/`, which load
-the pinned `@abgov/web-components` from `node_modules`. No network access is needed.
-
-```sh
-npm install
-npm test            # headless Chrome, web-components 3.2.0
-WC=2 npm test       # the same suite against web-components 2.5.0
-npm run test:open
-```
-
-The npm scripts go through `scripts/cypress.mjs`, which strips `ELECTRON_RUN_AS_NODE`
-so Cypress also starts from a VS Code terminal.
-
 ## Contributing
 
-Contributions are welcome. Open an issue or a pull request at
-https://github.com/yaroslav-rybiak/inspector-goadget.
+Contributions are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md) for how the library is
+built and tested. Security concerns go through [SECURITY.md](SECURITY.md).
 
 ## License
 
