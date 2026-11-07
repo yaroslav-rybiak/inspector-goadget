@@ -4,13 +4,12 @@ Cypress helpers for the [Alberta Design System](https://design.alberta.ca) web c
 (`goa-*`). Each helper pierces the shadow DOM of a component so a test can drive it in one
 line instead of chaining `.shadow().find(...)` by hand.
 
-## Supported versions
+## Compatibility
 
-| Dependency                | Supported                                                  |
-| ------------------------- | ---------------------------------------------------------- |
-| `@abgov/web-components`   | 2.x and 3.x. The suite runs against 2.5.0 and 3.2.0 in CI. |
-| `cypress`                 | 13 or newer (peer dependency); developed and tested on 16  |
-| Node                      | 20 or newer                                                |
+| | |
+| ------------------------- | ---------------------------------------------------------------------- |
+| `@abgov/web-components`   | Works with 2.x and 3.x; the suite runs against 2.5.0 and 3.2.0 in CI. Not a dependency: your application ships it. |
+| `cypress`                 | 13 or newer, the package's only dependency (peer); developed and tested on 16. |
 
 Applications built on `@abgov/angular-components` or `@abgov/react-components` render the
 same `goa-*` elements inside their wrapper elements, so the helpers work there unchanged;
