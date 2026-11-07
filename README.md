@@ -229,111 +229,12 @@ instance), so assert on the locator's element or listen for the event in your ap
 
 ### Coverage
 
-Every element `@abgov/web-components` 3.2.0 defines, and where this library stands on it
-(56 covered, 30 not needed, 10 out of scope). "Not needed" means a layout or structural component whose
-content is ordinary light DOM, reachable with plain Cypress commands. Every interactive
-component listed on design.alberta.ca has a helper.
+Every interactive component listed on design.alberta.ca has a helper in the tables above.
+Layout and structural components (block, grid, container, card, divider, spacer, text,
+icon, skeleton, spinner, the page layouts, footer and hero banner) render ordinary light
+DOM and need none. The experimental public-form components are out of scope.
 
-| Component | Status | Helpers or note |
-| --- | --- | --- |
-| `goa-accordion` | covered | openGoaAccordion, closeGoaAccordion, getGoaAccordion |
-| `goa-app-footer` | not needed | layout or display only; use plain Cypress |
-| `goa-app-footer-meta-section` | not needed | layout or display only; use plain Cypress |
-| `goa-app-footer-nav-section` | not needed | layout or display only; use plain Cypress |
-| `goa-app-header` | covered | clickGoaAppHeader, getGoaAppHeader |
-| `goa-app-header-menu` | covered | openGoaAppHeaderMenu, selectGoaAppHeaderMenu, getGoaAppHeaderMenu |
-| `goa-app-header-navigation` | not needed | layout or display only; use plain Cypress |
-| `goa-badge` | covered | getGoaBadge |
-| `goa-block` | not needed | layout or display only; use plain Cypress |
-| `goa-button` | covered | clickGoaButton, getGoaButton |
-| `goa-button-group` | not needed | layout or display only; use plain Cypress |
-| `goa-calendar` | covered | selectGoaCalendar, getGoaCalendar |
-| `goa-callout` | covered | getGoaCallout |
-| `goa-card` | not needed | layout or display only; use plain Cypress |
-| `goa-card-actions` | not needed | layout or display only; use plain Cypress |
-| `goa-card-content` | not needed | layout or display only; use plain Cypress |
-| `goa-card-group` | not needed | layout or display only; use plain Cypress |
-| `goa-card-image` | not needed | layout or display only; use plain Cypress |
-| `goa-checkbox` | covered | checkGoaCheckbox, uncheckGoaCheckbox, getGoaCheckbox |
-| `goa-checkbox-list` | covered | checkGoaCheckboxList, uncheckGoaCheckboxList, getGoaCheckboxList |
-| `goa-chip` | covered | clickGoaChip, getGoaChip |
-| `goa-circular-progress` | covered | getGoaCircularProgress |
-| `goa-container` | not needed | layout or display only; use plain Cypress |
-| `goa-data-grid` | covered | getGoaDataGrid |
-| `goa-date-picker` | covered | selectGoaDatePicker, getGoaDatePicker |
-| `goa-details` | covered | openGoaDetails, closeGoaDetails, getGoaDetails |
-| `goa-divider` | not needed | layout or display only; use plain Cypress |
-| `goa-drawer` | covered | closeGoaDrawer, getGoaDrawer |
-| `goa-dropdown` | covered | selectGoaDropdown, clearGoaDropdown, getGoaDropdown, getGoaDropdownOptions |
-| `goa-dropdown-item` | covered | read through getGoaDropdownOptions |
-| `goa-dropdown-multiselect` | covered | selectGoaDropdownMultiselect, deselectGoaDropdownMultiselect, getGoaDropdownMultiselect, getGoaDropdownMultiselectOptions |
-| `goa-fieldset` | out of scope | experimental public-form system |
-| `goa-file-upload-card` | covered | deleteGoaFileUploadCard, getGoaFileUploadCard |
-| `goa-file-upload-input` | covered | uploadGoaFileUploadInput, getGoaFileUploadInput |
-| `goa-filter-chip` | covered | removeGoaFilterChip, getGoaFilterChip |
-| `goa-focus-trap` | not needed | layout or display only; use plain Cypress |
-| `goa-form-item` | covered | getGoaFormItem |
-| `goa-form-step` | covered | selectGoaFormStep, getGoaFormStep |
-| `goa-form-stepper` | covered | getGoaFormStepper |
-| `goa-grid` | not needed | layout or display only; use plain Cypress |
-| `goa-hero-banner` | not needed | layout or display only; use plain Cypress |
-| `goa-icon` | not needed | layout or display only; use plain Cypress |
-| `goa-icon-button` | covered | clickGoaIconButton, getGoaIconButton |
-| `goa-input` | covered | fillGoaInput, getGoaInput |
-| `goa-layout-full-nav` | not needed | layout or display only; use plain Cypress |
-| `goa-linear-progress` | covered | getGoaLinearProgress |
-| `goa-link` | covered | clickGoaLink, getGoaLink |
-| `goa-link-button` | covered | clickGoaLinkButton, getGoaLinkButton |
-| `goa-menu-action` | covered | clickGoaMenuAction, getGoaMenuAction |
-| `goa-menu-button` | covered | openGoaMenuButton, selectGoaMenuButton, getGoaMenuButton |
-| `goa-microsite-header` | covered | clickGoaMicrositeHeader, getGoaMicrositeHeader |
-| `goa-modal` | covered | closeGoaModal, getGoaModal |
-| `goa-notification` | covered | dismissGoaNotification, getGoaNotification |
-| `goa-one-column-layout` | not needed | layout or display only; use plain Cypress |
-| `goa-page-block` | not needed | layout or display only; use plain Cypress |
-| `goa-pages` | not needed | layout or display only; use plain Cypress |
-| `goa-pagination` | covered | selectGoaPagination, getGoaPagination |
-| `goa-popover` | covered | openGoaPopover, closeGoaPopover, getGoaPopover |
-| `goa-public-form` | out of scope | experimental public-form system |
-| `goa-public-form-page` | out of scope | experimental public-form system |
-| `goa-public-form-summary` | out of scope | experimental public-form system |
-| `goa-public-form-task` | out of scope | experimental public-form system |
-| `goa-public-form-task-list` | out of scope | experimental public-form system |
-| `goa-public-subform` | out of scope | experimental public-form system |
-| `goa-public-subform-index` | out of scope | experimental public-form system |
-| `goa-push-drawer` | covered | closeGoaPushDrawer, getGoaPushDrawer |
-| `goa-push-drawer-internal` | covered | internal part of goa-push-drawer |
-| `goa-radio-group` | covered | selectGoaRadioGroup, getGoaRadioGroup |
-| `goa-radio-item` | covered | getGoaRadioItem (through its group) |
-| `goa-scroll-panel` | not needed | layout or display only; use plain Cypress |
-| `goa-scrollable` | not needed | layout or display only; use plain Cypress |
-| `goa-side-menu` | covered | clickGoaSideMenu, getGoaSideMenu |
-| `goa-side-menu-group` | covered | openGoaSideMenuGroup, closeGoaSideMenuGroup, getGoaSideMenuGroup |
-| `goa-side-menu-heading` | covered | light-DOM text inside getGoaSideMenu |
-| `goa-skeleton` | not needed | layout or display only; use plain Cypress |
-| `goa-spacer` | not needed | layout or display only; use plain Cypress |
-| `goa-spinner` | not needed | layout or display only; use plain Cypress |
-| `goa-tab` | covered | getGoaTab |
-| `goa-table` | covered | sortGoaTable, getGoaTable, getGoaTableRow, getGoaTableCell |
-| `goa-table-sort-header` | covered | getGoaTableSortHeader (clicked by sortGoaTable) |
-| `goa-tabs` | covered | selectGoaTab, getGoaTabs |
-| `goa-temp-notification` | covered | clickGoaTempNotification, getGoaTempNotification |
-| `goa-temp-notification-ctrl` | covered | its notifications are found by getGoaTempNotification |
-| `goa-text` | not needed | layout or display only; use plain Cypress |
-| `goa-textarea` | covered | fillGoaTextarea, getGoaTextarea |
-| `goa-three-column-layout` | not needed | layout or display only; use plain Cypress |
-| `goa-tooltip` | covered | showGoaTooltip, hideGoaTooltip, getGoaTooltip |
-| `goa-two-column-layout` | not needed | layout or display only; use plain Cypress |
-| `goa-work-side-menu` | covered | openGoaWorkSideMenu, closeGoaWorkSideMenu, getGoaWorkSideMenu |
-| `goa-work-side-menu-group` | covered | openGoaWorkSideMenuGroup, closeGoaWorkSideMenuGroup, getGoaWorkSideMenuGroup |
-| `goa-work-side-menu-item` | covered | clickGoaWorkSideMenuItem, getGoaWorkSideMenuItem |
-| `goa-work-side-notification-item` | covered | clickGoaWorkSideNotificationItem, getGoaWorkSideNotificationItem |
-| `goa-work-side-notification-panel` | covered | selectGoaWorkSideNotificationPanel, viewAllGoaWorkSideNotificationPanel, markAllReadGoaWorkSideNotificationPanel, closeGoaWorkSideNotificationPanel, getGoaWorkSideNotificationPanel |
-| `goa-workspace-layout` | not needed | layout or display only; use plain Cypress |
-| `goax-form-step` | out of scope | experimental public-form system |
-| `goax-form-stepper` | out of scope | experimental public-form system |
-
-Note: a `goa-table` that is upgraded before it
+One quirk worth knowing with web-components 2.x: a `goa-table` that is upgraded before it
 has any children renders no slot, so rows added afterwards never appear. Frameworks attach
 children before inserting the element, so this only shows up in hand-written pages.
 
